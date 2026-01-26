@@ -65,7 +65,11 @@ public class FlipManager : MonoBehaviour
         IsInverted = !IsInverted;
         lastFlipTime = Time.time;
 
-        ScreenFlash.Instance.Flash();
+        if (ScreenFlash.Instance != null) ScreenFlash.Instance.Flash();
+
+        // Tells the GameManager to switch the UI/Background colors
+        if (GameManager.Instance != null)
+            GameManager.Instance.ToggleGlitchUI(IsInverted);
     }
 
     public void FreezeFlips(float duration)
@@ -79,9 +83,11 @@ public class FlipManager : MonoBehaviour
         bool previous = IsInverted;
         IsInverted = false;
 
-        yield return new WaitForSeconds(duration);
+        // Resets the UI colors to Normal (Cyan) while frozen
+        if (GameManager.Instance != null)
+            GameManager.Instance.ToggleGlitchUI(false);
 
+        yield return new WaitForSeconds(duration);
         StartCoroutine(FlipRoutine());
     }
-
 }
