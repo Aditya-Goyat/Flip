@@ -134,8 +134,8 @@ public class GameManager : MonoBehaviour
         if (backgroundGridRenderer != null)
         {
             // Create a darker version of the player color (40% brightness)
-            Color bgColor = playerColor * 0.6f;
-            bgColor.a = 1f; // Ensure alpha stays 100%
+            Color bgColor = playerColor * 0.28f;
+            bgColor.a = 0.8f; // Ensure alpha stays 100%
             backgroundGridRenderer.material.color = bgColor;
         }
     }
