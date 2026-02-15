@@ -29,7 +29,11 @@ public class GameManager : MonoBehaviour
     // Drag ALL Text that should change color
     public TextMeshProUGUI[] uiTexts;
     // Drag the Background Grid object here
-    public Renderer backgroundGridRenderer;
+    [Header("Background Layers")]
+    public Renderer movingGridRenderer;
+    public Renderer secondaryGridRenderer; // optional depth layer
+    public SpriteRenderer gradientOverlay; // static fade
+    public SpriteRenderer depthOverlay;    // optional
 
     // Game State
     bool isDead;
@@ -130,14 +134,36 @@ public class GameManager : MonoBehaviour
             if (txt != null) txt.color = worldColor;
         }
 
-        // 4. Change Background Grid (Player Color but Darker)
-        if (backgroundGridRenderer != null)
+        // 4. Moving Grid Layer
+        if (movingGridRenderer != null)
         {
-            // Create a darker version of the player color (40% brightness)
-            Color bgColor = playerColor * 0.28f;
-            bgColor.a = 0.8f; // Ensure alpha stays 100%
-            backgroundGridRenderer.material.color = bgColor;
+            movingGridRenderer.material.color = worldColor;
         }
+
+        // 5. Secondary Grid (slightly dimmer for depth)
+        if (secondaryGridRenderer != null)
+        {
+            Color dimColor = worldColor * 0.6f;
+            dimColor.a = 1f;
+            secondaryGridRenderer.material.color = dimColor;
+        }
+
+        // 6. Gradient Overlay (never full color shift)
+        if (gradientOverlay != null)
+        {
+            gradientOverlay.color = isGlitching
+                ? new Color(1f, 0f, 0f, 0.8f)  // red tint during glitch
+                : new Color(0.47f, 0.47f, 0.47f, 0.89f);   // normal dark fade
+        }
+
+        // 7. Noise Overlay (subtle tint)
+        if (depthOverlay != null)
+        {
+            depthOverlay.color = isGlitching
+                 ? new Color(1f, 0f, 0f, 0.8f)  // red tint during glitch
+                 : new Color(1f, 1f, 1f, 1f);   // normal dark fade
+        }
+  
     }
 
     private IEnumerator GlitchTextAnimation()
