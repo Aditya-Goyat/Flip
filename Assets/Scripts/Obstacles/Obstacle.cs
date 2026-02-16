@@ -15,7 +15,8 @@ public class Obstacle : MonoBehaviour
             ? difficulty.CurrentObstacleSpeed
             : 4f;
 
-        transform.Translate(Vector2.down * speed * Time.deltaTime);
+        // FIX: Added Space.World to force movement straight down regardless of rotation
+        transform.Translate(Vector2.down * speed * Time.deltaTime, Space.World);
 
         if (transform.position.y < -6f)
             Destroy(gameObject);

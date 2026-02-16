@@ -31,6 +31,8 @@ public class ObstacleSpawner : MonoBehaviour
     void Spawn()
     {
         float x = Random.Range(-spawnXRange, spawnXRange);
-        Instantiate(obstaclePrefab, new Vector2(x, spawnY), Quaternion.identity);
+
+        // FIX: Use the prefab's rotation instead of Quaternion.identity
+        Instantiate(obstaclePrefab, new Vector2(x, spawnY), obstaclePrefab.transform.rotation);
     }
 }

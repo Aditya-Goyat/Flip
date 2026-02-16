@@ -827,7 +827,7 @@ SpriteRenderer:
   m_SortingOrder: 5
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
-  m_Color: {r: 0, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.95686275, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1351,7 +1351,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
+  near clip plane: 0.03
   far clip plane: 1000
   field of view: 34
   orthographic: 1
@@ -2260,8 +2260,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: aa01ca2feb7ae464bb44b3251653f251, type: 3}
-  m_Color: {r: 0.4792453, g: 0.4792453, b: 0.4792453, a: 0.9137255}
+  m_Sprite: {fileID: 21300000, guid: 8d4350b5d5f55d343a51782a63bab69c, type: 3}
+  m_Color: {r: 0.11996433, g: 0.61908776, b: 0.7660377, a: 0.63529414}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3768,19 +3768,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   deathCanvas: {fileID: 1436358220}
   glitchWarningText: {fileID: 97692695}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  glitchColor: {r: 1, g: 0, b: 0.052997112, a: 1}
+  normalColor: {r: 0.93962264, g: 0.93962264, b: 0.93962264, a: 1}
+  glitchColor: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
   playerRenderer: {fileID: 452959818}
-  playerNormalColor: {r: 0, g: 1, b: 1, a: 1}
-  playerGlitchColor: {r: 1, g: 0, b: 0.32941177, a: 1}
+  playerNormalColor: {r: 0, g: 1, b: 0.95686275, a: 1}
+  playerGlitchColor: {r: 1, g: 0.654902, b: 0, a: 1}
   glitchSprites:
   - {fileID: 5264587625943770235, guid: 20901a8774848504ca3433c5ff31331f, type: 3}
-  uiTexts:
-  - {fileID: 1430114077}
+  uiTexts: []
   movingGridRenderer: {fileID: 1178836524}
   secondaryGridRenderer: {fileID: 0}
   gradientOverlay: {fileID: 1177208317}
-  depthOverlay: {fileID: 0}
+  depthOverlay: {fileID: 1670500728}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

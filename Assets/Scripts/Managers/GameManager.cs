@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Theme Settings - World")]
     public Color normalColor = new Color(0f, 1f, 1f); // Cyan
-    public Color glitchColor = new Color(1f, 0f, 0.33f); // Neon Red
+    public Color glitchColor = new Color(1f, 0.12f, 0.12f); // Neon Red
 
     [Header("Theme Settings - Player")]
     public SpriteRenderer playerRenderer; // Drag Player object here
@@ -137,7 +137,9 @@ public class GameManager : MonoBehaviour
         // 4. Moving Grid Layer
         if (movingGridRenderer != null)
         {
-            movingGridRenderer.material.color = worldColor;
+            movingGridRenderer.material.color = isGlitching
+                ? new Color(0.21f, 0.46f, 0.01f, 1f)  // red tint during glitch
+                : new Color(0f, 0.18f, 0.28f, 1f);   // normal dark fade
         }
 
         // 5. Secondary Grid (slightly dimmer for depth)
@@ -152,15 +154,15 @@ public class GameManager : MonoBehaviour
         if (gradientOverlay != null)
         {
             gradientOverlay.color = isGlitching
-                ? new Color(1f, 0f, 0f, 0.8f)  // red tint during glitch
-                : new Color(0.47f, 0.47f, 0.47f, 0.89f);   // normal dark fade
+                ? new Color(1f, 0.18f, 0f, 1f)  // red tint during glitch
+                : new Color(0.11f, 0.61f, 0.76f, 0.63f);   // normal dark fade
         }
 
         // 7. Noise Overlay (subtle tint)
         if (depthOverlay != null)
         {
             depthOverlay.color = isGlitching
-                 ? new Color(1f, 0f, 0f, 0.8f)  // red tint during glitch
+                 ? new Color(1f, 0.58f, 0f, 0.8f)  // red tint during glitch
                  : new Color(1f, 1f, 1f, 1f);   // normal dark fade
         }
   

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 96d0628a7a2ad11479dccc811c64bb54
+guid: 536fc4615ff4c604f83f96d52fe3dee2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3899501225717974441
-    second: Glow Back_0
+      213: -5036506047245483448
+    second: Grid White_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -40,9 +40,9 @@ TextureImporter:
     filterMode: 1
     aniso: 1
     mipBias: 0
-    wrapU: 1
-    wrapV: 1
-    wrapW: 1
+    wrapU: 0
+    wrapV: 0
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -55,7 +55,7 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
-  alphaIsTransparency: 1
+  alphaIsTransparency: 0
   spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
@@ -113,7 +113,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Glow Back_0
+      name: Grid White_0
       rect:
         serializedVersion: 2
         x: 0
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9a5ce1054bfcd1630800000000000000
-      internalID: 3899501225717974441
+      spriteID: 84283d04f6cba1ab0800000000000000
+      internalID: -5036506047245483448
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Glow Back_0: 3899501225717974441
+      Grid White_0: -5036506047245483448
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
