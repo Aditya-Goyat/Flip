@@ -6,8 +6,8 @@ using TMPro;
 public class DeathUI : MonoBehaviour
 {
     [SerializeField] GameObject continueButton;
-    [SerializeField] TMP_Text finalScoreText;
-    [SerializeField] TMP_Text bestScoreText;
+    //[SerializeField] TMP_Text finalScoreText;
+    //[SerializeField] TMP_Text bestScoreText;
 
     void OnEnable()
     {
@@ -26,15 +26,15 @@ public class DeathUI : MonoBehaviour
             Debug.LogError("Continue Button reference is NULL");
         }
 
-        // Score display (safe)
-        if (ScoreManager.Instance != null)
-        {
-            finalScoreText.text =
-                $"Score: {Mathf.FloorToInt(ScoreManager.Instance.CurrentScore)}";
+        //// Score display (safe)
+        //if (ScoreManager.Instance != null)
+        //{
+        //    finalScoreText.text =
+        //        $"Score: {Mathf.FloorToInt(ScoreManager.Instance.CurrentScore)}";
 
-            bestScoreText.text =
-                $"Best: {Mathf.FloorToInt(ScoreManager.Instance.GetBestScore())}";
-        }
+        //    bestScoreText.text =
+        //        $"Best: {Mathf.FloorToInt(ScoreManager.Instance.GetBestScore())}";
+        //}
     }
 
     public void Restart()

@@ -4,16 +4,19 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 8f;
+
+    [Header("Movement Limits")]
+    [Tooltip("How far left/right the player can move. Lower this to keep them out of extreme corners.")]
+    [SerializeField] float xLimit = 2.0f; // Changed from 2.5f to a tighter boundary
+
     float direction;
     bool isDead;
     public static PlayerController Instance;
-
 
     void Awake()
     {
         Instance = this;
     }
-
 
     void Update()
     {
@@ -37,7 +40,10 @@ public class PlayerController : MonoBehaviour
 
         Vector3 pos = transform.position;
         pos.x += direction * moveSpeed * Time.deltaTime;
-        pos.x = Mathf.Clamp(pos.x, -2.5f, 2.5f);
+
+        // Use the exposed xLimit variable instead of the hardcoded 2.5f
+        pos.x = Mathf.Clamp(pos.x, -xLimit, xLimit);
+
         transform.position = pos;
     }
 
@@ -51,7 +57,6 @@ public class PlayerController : MonoBehaviour
             Die();
         }
     }
-
 
     void Die()
     {
@@ -85,5 +90,4 @@ public class PlayerController : MonoBehaviour
             false
         );
     }
-
 }

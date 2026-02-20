@@ -12,63 +12,69 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject deathCanvas;
 
     [Header("HUD Elements")]
-    public TextMeshProUGUI glitchWarningText; // Assign the "CONTROLS FLIPPED" text here
+    public TextMeshProUGUI glitchWarningText;
 
     [Header("Theme Settings - World")]
-    public Color normalColor = new Color(0f, 1f, 1f); // Cyan
-    public Color glitchColor = new Color(1f, 0.12f, 0.12f); // Neon Red
+    public Color normalColor = new Color(0f, 1f, 1f);
+    public Color glitchColor = new Color(1f, 0.12f, 0.12f);
 
     [Header("Theme Settings - Player")]
-    public SpriteRenderer playerRenderer; // Drag Player object here
-    public Color playerNormalColor = Color.white; // High contrast vs Cyan
-    public Color playerGlitchColor = new Color(1f, 0.9f, 0.2f); // Yellow (High contrast vs Red)
+    public SpriteRenderer playerRenderer;
+    public Color playerNormalColor = Color.white;
+    public Color playerGlitchColor = new Color(1f, 0.9f, 0.2f);
 
     [Header("Elements to Recolor")]
-    // Drag ALL Sprite Renderers (e.g. your sprite prefabs) here
     public SpriteRenderer[] glitchSprites;
-    // Drag ALL Text that should change color
     public TextMeshProUGUI[] uiTexts;
-    // Drag the Background Grid object here
+
     [Header("Background Layers")]
     public Renderer movingGridRenderer;
-    public Renderer secondaryGridRenderer; // optional depth layer
-    public SpriteRenderer gradientOverlay; // static fade
-    public SpriteRenderer depthOverlay;    // optional
+    public Renderer secondaryGridRenderer;
+    public SpriteRenderer gradientOverlay;
+    public SpriteRenderer depthOverlay;
 
-    // Game State
     bool isDead;
     bool hasRevived;
 
     void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
     }
 
     void Start()
     {
-        // Ensure we start with normal colors
         ApplyColor(false);
         if (glitchWarningText != null) glitchWarningText.gameObject.SetActive(false);
-
         ScoreManager.Instance.StartScore();
     }
-
-    // --- YOUR ORIGINAL LOGIC ---
 
     public void OnPlayerDeath()
     {
         if (isDead) return;
-
         isDead = true;
-        Time.timeScale = 0f;
-        deathCanvas.SetActive(true);
 
-        ScoreManager.Instance.StopScore();
+        if (ScoreManager.Instance != null) ScoreManager.Instance.StopScore();
+
+        // Check if we are in glitch mode
+        bool isGlitch = false;
+        if (FlipManager.Instance != null) isGlitch = FlipManager.IsInverted;
+
+        // Trigger VFX Sequence (Particles + Pause)
+        if (VFXManager.Instance != null && PlayerController.Instance != null)
+        {
+            VFXManager.Instance.TriggerDeathSequence(PlayerController.Instance.transform.position, isGlitch);
+        }
+        else
+        {
+            ShowDeathScreen(); // Fallback
+        }
+    }
+
+    // Called by VFXManager after the delay
+    public void ShowDeathScreen()
+    {
+        if (deathCanvas != null) deathCanvas.SetActive(true);
     }
 
     public bool CanRevive()
@@ -82,11 +88,18 @@ public class GameManager : MonoBehaviour
         isDead = false;
 
         Time.timeScale = 1f;
-        deathCanvas.SetActive(false);
+        if (deathCanvas != null) deathCanvas.SetActive(false);
 
-        PlayerController.Instance.Revive();
+        if (PlayerController.Instance != null)
+        {
+            // FIX: Turn the player's GameObject back on after the VFX Manager hid it
+            PlayerController.Instance.gameObject.SetActive(true);
+
+            PlayerController.Instance.Revive();
+        }
         ObstacleCleaner.ClearAll();
-        FlipManager.Instance.FreezeFlips(3f);
+
+        if (FlipManager.Instance != null) FlipManager.Instance.FreezeFlips(3f);
     }
 
     public void RestartRun()
@@ -95,18 +108,10 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
-    // --- NEW COLOR CHANGE LOGIC ---
-
     public void ToggleGlitchUI(bool isGlitching)
     {
-        // 1. Show/Hide Warning Text
-        if (glitchWarningText != null)
-            glitchWarningText.gameObject.SetActive(isGlitching);
-
-        // 2. Apply Colors (Function now handles distinction internally)
+        if (glitchWarningText != null) glitchWarningText.gameObject.SetActive(isGlitching);
         ApplyColor(isGlitching);
-
-        // 3. Text Shake Effect
         if (isGlitching) StartCoroutine(GlitchTextAnimation());
         else StopAllCoroutines();
     }
@@ -116,69 +121,33 @@ public class GameManager : MonoBehaviour
         Color worldColor = isGlitching ? glitchColor : normalColor;
         Color playerColor = isGlitching ? playerGlitchColor : playerNormalColor;
 
-        // 1. Change Player Color (Distinct)
-        if (playerRenderer != null)
-        {
-            playerRenderer.color = playerColor;
-        }
+        if (playerRenderer != null) playerRenderer.color = playerColor;
 
-        // 2. Change Sprite Colors (Prefabs/Obstacles/Environment)
-        foreach (var sprite in glitchSprites)
-        {
-            if (sprite != null) sprite.color = worldColor;
-        }
+        foreach (var sprite in glitchSprites) if (sprite != null) sprite.color = worldColor;
+        foreach (var txt in uiTexts) if (txt != null) txt.color = worldColor;
 
-        // 3. Change Text Colors
-        foreach (var txt in uiTexts)
-        {
-            if (txt != null) txt.color = worldColor;
-        }
-
-        // 4. Moving Grid Layer
         if (movingGridRenderer != null)
-        {
-            movingGridRenderer.material.color = isGlitching
-                ? new Color(0.21f, 0.46f, 0.01f, 1f)  // red tint during glitch
-                : new Color(0f, 0.18f, 0.28f, 1f);   // normal dark fade
-        }
+            movingGridRenderer.material.color = isGlitching ? new Color(0.21f, 0.46f, 0.01f, 1f) : new Color(0f, 0.18f, 0.28f, 1f);
 
-        // 5. Secondary Grid (slightly dimmer for depth)
         if (secondaryGridRenderer != null)
-        {
-            Color dimColor = worldColor * 0.6f;
-            dimColor.a = 1f;
-            secondaryGridRenderer.material.color = dimColor;
-        }
+            secondaryGridRenderer.material.color = worldColor * 0.6f;
 
-        // 6. Gradient Overlay (never full color shift)
         if (gradientOverlay != null)
-        {
-            gradientOverlay.color = isGlitching
-                ? new Color(1f, 0.18f, 0f, 1f)  // red tint during glitch
-                : new Color(0.11f, 0.61f, 0.76f, 0.63f);   // normal dark fade
-        }
+            gradientOverlay.color = isGlitching ? new Color(1f, 0.18f, 0f, 1f) : new Color(0.11f, 0.61f, 0.76f, 0.63f);
 
-        // 7. Noise Overlay (subtle tint)
         if (depthOverlay != null)
-        {
-            depthOverlay.color = isGlitching
-                 ? new Color(1f, 0.58f, 0f, 0.8f)  // red tint during glitch
-                 : new Color(1f, 1f, 1f, 1f);   // normal dark fade
-        }
-  
+            depthOverlay.color = isGlitching ? new Color(1f, 0.58f, 0f, 0.8f) : new Color(1f, 1f, 1f, 1f);
     }
 
     private IEnumerator GlitchTextAnimation()
     {
         if (!glitchWarningText) yield break;
         RectTransform rect = glitchWarningText.rectTransform;
-        Vector2 originalPos = Vector2.zero; // Assuming centered anchor
+        Vector2 originalPos = Vector2.zero;
 
         while (true)
         {
-            // Shake position
             rect.anchoredPosition = originalPos + new Vector2(Random.Range(-5f, 5f), Random.Range(-5f, 5f));
-            // Strobe color to white occasionally
             glitchWarningText.color = Random.value > 0.8f ? Color.white : glitchColor;
             yield return new WaitForSeconds(0.05f);
         }
