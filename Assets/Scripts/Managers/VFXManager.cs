@@ -15,10 +15,19 @@ public class VFXManager : MonoBehaviour
     [SerializeField] private Color glitchColor = new Color(1f, 0f, 0.33f); // Red/Magenta
     [SerializeField] private Color playerGlitchColor = new Color(1f, 0.9f, 0.2f); // Yellow
 
+    [Header("Audio")]
+    [Tooltip("Assign the explosion/shatter sound effect")]
+    [SerializeField] private AudioClip deathSound;
+    [Tooltip("Assign an AudioSource component attached to this GameObject")]
+    [SerializeField] private AudioSource vfxAudioSource;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        // Auto-grab AudioSource if not manually assigned
+        if (vfxAudioSource == null) vfxAudioSource = GetComponent<AudioSource>();
     }
 
     /// <summary>
@@ -40,7 +49,14 @@ public class VFXManager : MonoBehaviour
             PlayerController.Instance.gameObject.SetActive(false);
         }
 
-        // 3. Spawn the "Debris" Particles
+        // 3. Play Death Sound
+        if (deathSound != null && vfxAudioSource != null)
+        {
+            // PlayOneShot allows it to play fully even if triggered rapidly
+            vfxAudioSource.PlayOneShot(deathSound);
+        }
+
+        // 4. Spawn the "Debris" Particles
         if (shipDebrisPrefab != null)
         {
             // Force Z to -5 so it physically sits in front of the background/player
@@ -49,9 +65,6 @@ public class VFXManager : MonoBehaviour
             ParticleSystem p = Instantiate(shipDebrisPrefab, spawnPos, Quaternion.identity);
 
             // --- CRITICAL FIX: Loop through ALL children ---
-            // Often particle systems have child emitters. We must ensure ALL of them
-            // ignore the TimeScale pause and render on top.
-
             var allParticles = p.GetComponentsInChildren<ParticleSystem>();
             foreach (var ps in allParticles)
             {
@@ -77,14 +90,14 @@ public class VFXManager : MonoBehaviour
             Camerashake.Instance.Shake(0.4f, 0.3f);
         }
 
-        // 4. "Hit Stop" - Freeze the game logic immediately
+        // 5. "Hit Stop" - Freeze the game logic immediately
         Time.timeScale = 0f;
 
-        // 5. Wait for the explosion to play out (e.g., 1.5 seconds real-time)
+        // 6. Wait for the explosion to play out (e.g., 1.5 seconds real-time)
         // Since TimeScale is 0, we must use WaitForSecondsRealtime
         yield return new WaitForSecondsRealtime(1.5f);
 
-        // 6. Tell GameManager to show the Death Screen
+        // 7. Tell GameManager to show the Death Screen
         if (GameManager.Instance != null)
         {
             GameManager.Instance.ShowDeathScreen();

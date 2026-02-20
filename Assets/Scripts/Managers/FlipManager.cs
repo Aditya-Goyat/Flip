@@ -20,6 +20,12 @@ public class FlipManager : MonoBehaviour
     [Header("Safety")]
     [SerializeField] float minGapBetweenFlips = 1f;
 
+    [Header("Audio")]
+    [Tooltip("Assign the sound effect to play when controls flip")]
+    [SerializeField] private AudioClip flipSound;
+    [Tooltip("Assign an AudioSource component attached to this GameObject")]
+    [SerializeField] private AudioSource flipAudioSource;
+
     float lastFlipTime;
 
     public static FlipManager Instance;
@@ -27,6 +33,9 @@ public class FlipManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        // Auto-grab AudioSource if not manually assigned
+        if (flipAudioSource == null) flipAudioSource = GetComponent<AudioSource>();
     }
 
     void Start()
@@ -64,6 +73,12 @@ public class FlipManager : MonoBehaviour
     {
         IsInverted = !IsInverted;
         lastFlipTime = Time.time;
+
+        // Play the Flip Sound Effect locally!
+        if (flipAudioSource != null && flipSound != null)
+        {
+            flipAudioSource.PlayOneShot(flipSound);
+        }
 
         if (ScreenFlash.Instance != null) ScreenFlash.Instance.Flash();
 
