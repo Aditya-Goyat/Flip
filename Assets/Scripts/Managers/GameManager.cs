@@ -46,7 +46,8 @@ public class GameManager : MonoBehaviour
     {
         ApplyColor(false);
         if (glitchWarningText != null) glitchWarningText.gameObject.SetActive(false);
-        ScoreManager.Instance.StartScore();
+        
+        if (ScoreManager.Instance != null) ScoreManager.Instance.StartScore();
     }
 
     public void OnPlayerDeath()
@@ -100,6 +101,9 @@ public class GameManager : MonoBehaviour
         ObstacleCleaner.ClearAll();
 
         if (FlipManager.Instance != null) FlipManager.Instance.FreezeFlips(3f);
+
+        // FIX: Tell the ScoreManager to resume counting from where it left off!
+        if (ScoreManager.Instance != null) ScoreManager.Instance.ResumeScore();
     }
 
     public void RestartRun()

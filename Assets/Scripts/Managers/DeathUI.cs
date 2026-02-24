@@ -56,7 +56,8 @@ public class DeathUI : MonoBehaviour
         AdsManager.Instance.ShowRewarded(() =>
         {
             GameManager.Instance.RevivePlayer();
-            ScoreManager.Instance.StartScore();
+            // FIX: Removed ScoreManager.Instance.StartScore() from here!
+            // GameManager.RevivePlayer() now automatically calls ResumeScore() behind the scenes.
         });
     }
 }

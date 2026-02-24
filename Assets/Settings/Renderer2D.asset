@@ -1,5 +1,21 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3656439292715740890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d97da06d1b4e6e64e837fe2d4f512162, type: 3}
+  m_Name: DigitalGlitchFeature
+  m_EditorClassIdentifier: URPGlitch::URPGlitch.DigitalGlitchFeature
+  m_Active: 1
+  shader: {fileID: 4800000, guid: f445ed039be4e2c4c81930580ce0fa68, type: 3}
+  compatShader: {fileID: 4800000, guid: 2f7db6c094d160148aa3595fd806f507, type: 3}
+  renderPassEvent: 500
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24,8 +40,10 @@ MonoBehaviour:
     probeSamplingDebugMesh: {fileID: -3555484719484374845, guid: 57d7c4c16e2765b47a4d2069b311bffe, type: 3}
     probeSamplingDebugTexture: {fileID: 2800000, guid: 24ec0e140fb444a44ab96ee80844e18e, type: 3}
     probeVolumeBlendStatesCS: {fileID: 0}
-  m_RendererFeatures: []
-  m_RendererFeatureMap: 
+  m_RendererFeatures:
+  - {fileID: 4731151552460483402}
+  - {fileID: -3656439292715740890}
+  m_RendererFeatureMap: 4aebf12e456da84126d1e5fed5b741cd
   m_UseNativeRenderPass: 0
   m_LayerMask:
     serializedVersion: 2
@@ -56,3 +74,18 @@ MonoBehaviour:
   m_PostProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   m_DefaultMaterialType: 0
   m_DefaultCustomMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+--- !u!114 &4731151552460483402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7b51d34ff9fa60499f5f35735de5c90, type: 3}
+  m_Name: AnalogGlitchRenderFeature
+  m_EditorClassIdentifier: URPGlitch::URPGlitch.AnalogGlitchRenderFeature
+  m_Active: 1
+  anaglogGlitchShader: {fileID: 4800000, guid: 97d9be06c8e6c1e4781abe10d57474a8, type: 3}
+  renderPassEvent: 500

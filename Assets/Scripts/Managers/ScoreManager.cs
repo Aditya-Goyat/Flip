@@ -33,6 +33,12 @@ public class ScoreManager : MonoBehaviour
         isRunning = true;
     }
 
+    // New method to unpause without resetting to zero
+    public void ResumeScore()
+    {
+        isRunning = true;
+    }
+
     public void StopScore()
     {
         isRunning = false;
