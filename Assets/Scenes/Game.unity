@@ -840,6 +840,7 @@ GameObject:
   - component: {fileID: 452959817}
   - component: {fileID: 452959816}
   - component: {fileID: 452959820}
+  - component: {fileID: 452959821}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1008,6 +1009,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &452959821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452959815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 128c9d0d53424b34ba1d44986489efdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoverEffect
+  hoverAmount: 0.17
+  hoverSpeed: 0.8
 --- !u!1 &458544790
 GameObject:
   m_ObjectHideFlags: 0
@@ -3740,7 +3755,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1990427087
 MonoBehaviour:
   m_ObjectHideFlags: 0
