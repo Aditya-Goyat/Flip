@@ -35,17 +35,18 @@ public class FlipManager : MonoBehaviour
         Instance = this;
 
         // Auto-grab AudioSource if not manually assigned
-        if (flipAudioSource == null) flipAudioSource = GetComponent<AudioSource>();
+        if (flipAudioSource == null)
+            flipAudioSource = GetComponent<AudioSource>();
     }
 
-    void Start()
+    private void Start()
     {
         IsInverted = false;
         lastFlipTime = -minGapBetweenFlips;
         StartCoroutine(FlipRoutine());
     }
 
-    IEnumerator FlipRoutine()
+    private IEnumerator FlipRoutine()
     {
         while (true)
         {
@@ -63,28 +64,39 @@ public class FlipManager : MonoBehaviour
         }
     }
 
-    float GetRampT()
+    private float GetRampT()
     {
         float elapsed = Time.timeSinceLevelLoad - rampStartTime;
         return Mathf.Clamp01(elapsed / fullRampTime);
     }
 
-    void DoFlip()
+    private void DoFlip()
     {
         IsInverted = !IsInverted;
         lastFlipTime = Time.time;
 
-        // Play the Flip Sound Effect locally!
+        // Play flip haptic
+        if (Haptics_Manager.Instance != null)
+        {
+            Haptics_Manager.Instance.FlipTap();
+        }
+
+        // Play the flip sound effect
         if (flipAudioSource != null && flipSound != null)
         {
             flipAudioSource.PlayOneShot(flipSound);
         }
 
-        if (ScreenFlash.Instance != null) ScreenFlash.Instance.Flash();
+        if (ScreenFlash.Instance != null)
+        {
+            ScreenFlash.Instance.Flash();
+        }
 
-        // Tells the GameManager to switch the UI/Background colors
+        // Tell the GameManager to switch the UI/Background colors
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.ToggleGlitchUI(IsInverted);
+        }
     }
 
     public void FreezeFlips(float duration)
@@ -93,14 +105,15 @@ public class FlipManager : MonoBehaviour
         StartCoroutine(FreezeRoutine(duration));
     }
 
-    System.Collections.IEnumerator FreezeRoutine(float duration)
+    private IEnumerator FreezeRoutine(float duration)
     {
-        bool previous = IsInverted;
         IsInverted = false;
 
-        // Resets the UI colors to Normal (Cyan) while frozen
+        // Reset the UI colors to Normal while frozen
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.ToggleGlitchUI(false);
+        }
 
         yield return new WaitForSeconds(duration);
         StartCoroutine(FlipRoutine());

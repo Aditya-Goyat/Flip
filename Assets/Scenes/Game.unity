@@ -904,8 +904,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a886aac7b818874092c7385c7146dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 4
-  xLimit: 1.5
+  fallbackMoveSpeed: 8
+  difficultyManager: {fileID: 0}
+  edgePadding: 0.2
 --- !u!61 &452959817
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1931,6 +1932,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 663168797}
   m_CullTransparentMesh: 1
+--- !u!1 &829848239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 829848240}
+  - component: {fileID: 829848241}
+  m_Layer: 0
+  m_Name: PowerupManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &829848240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829848239}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1523006482}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &829848241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 829848239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 088e92e3f269fa9419a9edfe9db3da41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PowerupManager
+  shieldDuration: 6
+  slowTimeDuration: 5
+  speedBoostDuration: 5
+  slowTimeMultiplier: 0.6
+  speedBoostMultiplier: 1.4
 --- !u!1 &961183264
 GameObject:
   m_ObjectHideFlags: 0
@@ -2500,12 +2550,157 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyManager
   rampStartTime: 10
+  timeToMaxDifficulty: 120
+  difficultyCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.23275757
+      value: 0.10630615
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.46551514
+      value: 0.3730255
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.75
+      value: 0.72
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1.074707
+      value: 1.0657883
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   baseObstacleSpeed: 4
-  maxObstacleSpeed: 9
-  speedRampRate: 0.05
+  maxObstacleSpeed: 16
+  obstacleSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   baseSpawnInterval: 1.2
-  minSpawnInterval: 0.45
-  spawnRampRate: 0.01
+  minSpawnInterval: 0.2
+  spawnIntervalCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  basePlayerMoveSpeed: 8
+  maxPlayerMoveSpeed: 10
+  playerSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.4
+      value: 0.35
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.75
+      value: 0.75
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  enablePulse: 1
+  pulseStrength: 0.08
+  pulseFrequency: 0.18
 --- !u!4 &1218491838
 Transform:
   m_ObjectHideFlags: 0
@@ -3117,6 +3312,7 @@ Transform:
   - {fileID: 2133996749}
   - {fileID: 1470981485}
   - {fileID: 424276063}
+  - {fileID: 829848240}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1590655430
@@ -3850,9 +4046,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b85552f635f9d4a4f9da30febc2321e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
-  obstaclePrefab: {fileID: 2686304047017998176, guid: 20901a8774848504ca3433c5ff31331f, type: 3}
-  spawnXRange: 1.5
+  difficulty: {fileID: 0}
+  obstacleTypes:
+  - name: basic
+    prefab: {fileID: 2686304047017998176, guid: 20901a8774848504ca3433c5ff31331f, type: 3}
+    unlockTime: 0
+    spawnWeight: 10
+  - name: bomb
+    prefab: {fileID: 3264276780235908577, guid: 7d9e6d8a728e75647bbf012250fcb0f6, type: 3}
+    unlockTime: 20
+    spawnWeight: 5
+  - name: long
+    prefab: {fileID: 8026316070533005050, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
+    unlockTime: 40
+    spawnWeight: 4
   spawnY: 6
+  laneXPositions:
+  - -2
+  - -1
+  - 0
+  - 1
+  - 2
+  startDelay: 1
+  doubleSpawnStartDifficulty: 0.25
+  burstSpawnStartDifficulty: 0.55
+  maxDoubleSpawnChance: 0.3
+  maxBurstChance: 0.15
+  minBurstCount: 2
+  maxBurstCount: 3
+  burstGap: 0.12
+  maxSameLaneStreak: 2
 --- !u!4 &1990427088
 Transform:
   m_ObjectHideFlags: 0
@@ -3997,6 +4220,67 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &2132022837
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2132022839}
+  - component: {fileID: 2132022838}
+  m_Layer: 0
+  m_Name: PowerupSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2132022838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132022837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6064012332075a42a5705ffa3bc8834, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PowerupSpawner
+  powerups:
+  - type: 0
+    prefab: {fileID: 2358316108180103629, guid: 2b4bd710127c08248a461e239b7e0af5, type: 3}
+    spawnWeight: 3
+  - type: 1
+    prefab: {fileID: 6741317803162138356, guid: c0b9f9e4c5b832c41840ab03bd702335, type: 3}
+    spawnWeight: 2
+  - type: 2
+    prefab: {fileID: 4427785261831207834, guid: 1e7b1091f6ee09d42b3873d322bba218, type: 3}
+    spawnWeight: 2
+  spawnY: 6
+  spawnXMin: -2.2
+  spawnXMax: 2.2
+  firstSpawnDelay: 10
+  minSpawnInterval: 12
+  maxSpawnInterval: 20
+  maxPowerupsAlive: 1
+--- !u!4 &2132022839
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132022837}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.37232, y: 0.56565, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2133996748
 GameObject:
   m_ObjectHideFlags: 0
@@ -4069,3 +4353,4 @@ SceneRoots:
   - {fileID: 1990427088}
   - {fileID: 1447213755}
   - {fileID: 1523006482}
+  - {fileID: 2132022839}

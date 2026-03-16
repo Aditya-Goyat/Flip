@@ -3,23 +3,55 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float moveSpeed = 8f;
+    [Header("Movement")]
+    [SerializeField] private float fallbackMoveSpeed = 8f;
 
-    [Header("Movement Limits")]
-    [Tooltip("How far left/right the player can move. Lower this to keep them out of extreme corners.")]
-    [SerializeField] float xLimit = 2.0f; // Changed from 2.5f to a tighter boundary
+    [Header("References")]
+    [SerializeField] private DifficultyManager difficultyManager;
 
-    float direction;
-    bool isDead;
+    [Header("Edge Padding")]
+    [Tooltip("Small padding so the player sprite doesn't go half off screen.")]
+    [SerializeField] private float edgePadding = 0.2f;
+
+    private float direction;
+    private float currentVelocity;
+    private bool isDead;
+
+    private float leftLimit;
+    private float rightLimit;
+
     public static PlayerController Instance;
 
-    void Awake()
+    private void Awake()
     {
         Instance = this;
     }
 
-    void Update()
+    private void Start()
     {
+        if (difficultyManager == null)
+        {
+            difficultyManager = FindFirstObjectByType<DifficultyManager>();
+        }
+
+        CalculateScreenBounds();
+    }
+
+    private void CalculateScreenBounds()
+    {
+        Camera cam = Camera.main;
+
+        Vector3 left = cam.ScreenToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
+        Vector3 right = cam.ScreenToWorldPoint(new Vector3(Screen.width, 0, cam.nearClipPlane));
+
+        leftLimit = left.x + edgePadding;
+        rightLimit = right.x - edgePadding;
+    }
+
+    private void Update()
+    {
+        if (isDead) return;
+
         direction = 0f;
 
         if (Touchscreen.current != null &&
@@ -38,43 +70,78 @@ public class PlayerController : MonoBehaviour
         if (FlipManager.IsInverted)
             direction *= -1f;
 
-        Vector3 pos = transform.position;
-        pos.x += direction * moveSpeed * Time.deltaTime;
+        float currentMoveSpeed = fallbackMoveSpeed;
 
-        // Use the exposed xLimit variable instead of the hardcoded 2.5f
-        pos.x = Mathf.Clamp(pos.x, -xLimit, xLimit);
+        if (difficultyManager != null)
+        {
+            currentMoveSpeed = difficultyManager.CurrentPlayerMoveSpeed;
+        }
+
+        if (PowerupManager.Instance != null)
+        {
+            currentMoveSpeed *= PowerupManager.Instance.PlayerSpeedMultiplier;
+        }
+
+        Vector3 pos = transform.position;
+
+        float targetVelocity = direction * currentMoveSpeed;
+        currentVelocity = Mathf.Lerp(currentVelocity, targetVelocity, 12f * Time.deltaTime);
+        pos.x += currentVelocity * Time.deltaTime;
+
+        pos.x = Mathf.Clamp(pos.x, leftLimit, rightLimit);
 
         transform.position = pos;
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         if (isDead) return;
 
         if (collision.gameObject.CompareTag("Obstacle"))
         {
+            if (PowerupManager.Instance != null && PowerupManager.Instance.ConsumeShield())
+            {
+                Destroy(collision.gameObject);
+                return;
+            }
+
             isDead = true;
             Die();
         }
     }
 
-    void Die()
+    private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.CompareTag("Powerup"))
+        {
+            Powerup powerup = other.GetComponent<Powerup>();
+            if (powerup != null && PowerupManager.Instance != null)
+            {
+                PowerupManager.Instance.CollectPowerup(powerup.GetPowerupType());
+                Destroy(other.gameObject);
+            }
+        }
+    }
+
+    private void Die()
+    {
+        if (Haptics_Manager.Instance != null)
+        {
+            Haptics_Manager.Instance.DeathTap();
+        }
+
         GameManager.Instance.OnPlayerDeath();
     }
 
     public void Revive()
     {
         isDead = false;
-
-        // Safe respawn position
+        currentVelocity = 0f;
         transform.position = new Vector3(0f, -3.5f, 0f);
-
-        // Brief invulnerability
         StartCoroutine(Invulnerability());
     }
 
-    System.Collections.IEnumerator Invulnerability()
+    private System.Collections.IEnumerator Invulnerability()
     {
         Physics2D.IgnoreLayerCollision(
             LayerMask.NameToLayer("Player"),

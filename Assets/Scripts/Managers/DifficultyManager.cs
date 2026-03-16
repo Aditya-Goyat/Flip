@@ -3,29 +3,88 @@ using UnityEngine;
 public class DifficultyManager : MonoBehaviour
 {
     [Header("Time")]
-    [SerializeField] float rampStartTime = 10f;
+    [SerializeField] private float rampStartTime = 5f;
+    [SerializeField] private float timeToMaxDifficulty = 80f;
+
+    [Header("Global Difficulty")]
+    [SerializeField]
+    private AnimationCurve difficultyCurve =
+        new AnimationCurve(
+            new Keyframe(0f, 0f),
+            new Keyframe(0.25f, 0.08f),
+            new Keyframe(0.5f, 0.35f),
+            new Keyframe(0.75f, 0.72f),
+            new Keyframe(1f, 1f)
+        );
 
     [Header("Obstacle Speed")]
-    [SerializeField] float baseObstacleSpeed = 4f;
-    [SerializeField] float maxObstacleSpeed = 9f;
-    [SerializeField] float speedRampRate = 0.05f;
+    [SerializeField] private float baseObstacleSpeed = 4f;
+    [SerializeField] private float maxObstacleSpeed = 10f;
+    [SerializeField] private AnimationCurve obstacleSpeedCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
-    [Header("Spawn Rate")]
-    [SerializeField] float baseSpawnInterval = 1.2f;
-    [SerializeField] float minSpawnInterval = 0.45f;
-    [SerializeField] float spawnRampRate = 0.01f;
+    [Header("Spawn Interval")]
+    [SerializeField] private float baseSpawnInterval = 1.15f;
+    [SerializeField] private float minSpawnInterval = 0.42f;
+    [SerializeField] private AnimationCurve spawnIntervalCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
+    [Header("Player Speed")]
+    [SerializeField] private float basePlayerMoveSpeed = 8f;
+    [SerializeField] private float maxPlayerMoveSpeed = 10f;
+    [SerializeField]
+    private AnimationCurve playerSpeedCurve =
+        new AnimationCurve(
+            new Keyframe(0f, 0f),
+            new Keyframe(0.4f, 0.35f),
+            new Keyframe(0.75f, 0.75f),
+            new Keyframe(1f, 1f)
+        );
+
+    [Header("Optional Pulse")]
+    [SerializeField] private bool enablePulse = true;
+    [SerializeField] private float pulseStrength = 0.08f;
+    [SerializeField] private float pulseFrequency = 0.18f;
+
+    public float Difficulty01 { get; private set; }
     public float CurrentObstacleSpeed { get; private set; }
     public float CurrentSpawnInterval { get; private set; }
+    public float CurrentPlayerMoveSpeed { get; private set; }
 
-    void Update()
+    private void Update()
     {
-        float t = Mathf.Max(0f, Time.timeSinceLevelLoad - rampStartTime);
+        float elapsed = Mathf.Max(0f, Time.timeSinceLevelLoad - rampStartTime);
 
-        CurrentObstacleSpeed =
-            Mathf.Min(maxObstacleSpeed, baseObstacleSpeed + t * speedRampRate);
+        float rawDifficulty = timeToMaxDifficulty > 0f
+            ? Mathf.Clamp01(elapsed / timeToMaxDifficulty)
+            : 1f;
 
-        CurrentSpawnInterval =
-            Mathf.Max(minSpawnInterval, baseSpawnInterval - t * spawnRampRate);
+        Difficulty01 = Mathf.Clamp01(difficultyCurve.Evaluate(rawDifficulty));
+
+        float pulse = 0f;
+        if (enablePulse)
+        {
+            pulse = Mathf.Sin(Time.timeSinceLevelLoad * pulseFrequency * Mathf.PI * 2f) * pulseStrength;
+        }
+
+        float obstacleDifficulty = Mathf.Clamp01(Difficulty01 + pulse);
+        float spawnDifficulty = Mathf.Clamp01(Difficulty01 + pulse * 0.75f);
+        float playerDifficulty = Difficulty01;
+
+        CurrentObstacleSpeed = Mathf.Lerp(
+            baseObstacleSpeed,
+            maxObstacleSpeed,
+            obstacleSpeedCurve.Evaluate(obstacleDifficulty)
+        );
+
+        CurrentSpawnInterval = Mathf.Lerp(
+            baseSpawnInterval,
+            minSpawnInterval,
+            spawnIntervalCurve.Evaluate(spawnDifficulty)
+        );
+
+        CurrentPlayerMoveSpeed = Mathf.Lerp(
+            basePlayerMoveSpeed,
+            maxPlayerMoveSpeed,
+            playerSpeedCurve.Evaluate(playerDifficulty)
+        );
     }
 }

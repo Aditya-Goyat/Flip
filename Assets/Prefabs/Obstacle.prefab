@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 93c91d0a24375694ea98c84088cb8e84, type: 3}
-  m_Color: {r: 0.93962264, g: 0.93962264, b: 0.93962264, a: 1}
+  m_Color: {r: 0.9411765, g: 0.9411765, b: 0.9411765, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -106,6 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 359bd98dea8423a42963bdb82e1d150d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  fallbackSpeed: 4
+  destroyY: -6
 --- !u!60 &-6477461866766372657
 PolygonCollider2D:
   m_ObjectHideFlags: 0

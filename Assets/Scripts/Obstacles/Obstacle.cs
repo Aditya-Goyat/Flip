@@ -2,23 +2,36 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    DifficultyManager difficulty;
+    [SerializeField] private float speedMultiplier = 1f;
+    [SerializeField] private float fallbackSpeed = 4f;
+    [SerializeField] private float destroyY = -6f;
 
-    void Start()
+    private DifficultyManager difficulty;
+
+    private void Start()
     {
         difficulty = FindFirstObjectByType<DifficultyManager>();
     }
 
-    void Update()
+    private void Update()
     {
-        float speed = difficulty != null
+        float baseSpeed = difficulty != null
             ? difficulty.CurrentObstacleSpeed
-            : 4f;
+            : fallbackSpeed;
 
-        // FIX: Added Space.World to force movement straight down regardless of rotation
-        transform.Translate(Vector2.down * speed * Time.deltaTime, Space.World);
+        float powerupMultiplier = 1f;
+        if (PowerupManager.Instance != null)
+        {
+            powerupMultiplier = PowerupManager.Instance.ObstacleSpeedMultiplier;
+        }
 
-        if (transform.position.y < -6f)
+        float finalSpeed = baseSpeed * speedMultiplier * powerupMultiplier;
+
+        transform.Translate(Vector2.down * finalSpeed * Time.deltaTime, Space.World);
+
+        if (transform.position.y < destroyY)
+        {
             Destroy(gameObject);
+        }
     }
 }
