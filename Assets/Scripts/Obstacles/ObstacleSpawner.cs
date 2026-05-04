@@ -7,10 +7,8 @@ public class ObstacleType
 {
     public string name;
     public GameObject prefab;
-
     [Tooltip("This obstacle starts spawning after this many seconds.")]
     public float unlockTime = 0f;
-
     [Tooltip("Higher weight = spawns more often among unlocked obstacles.")]
     public int spawnWeight = 1;
 }
@@ -23,6 +21,14 @@ public class ObstacleSpawner : MonoBehaviour
     [Header("Obstacle Types")]
     [SerializeField] private List<ObstacleType> obstacleTypes = new List<ObstacleType>();
 
+    [Header("Gauntlet Event (Laser Phase)")]
+    [Tooltip("The specific prefab used for the Gauntlet (The Laser Gate)")]
+    [SerializeField] private GameObject laserGatePrefab;
+    [Tooltip("How long the Laser Phase lasts in seconds.")]
+    [SerializeField] private float gauntletDuration = 8f;
+    [Tooltip("Time between Gauntlet phases.")]
+    [SerializeField] private float timeBetweenGauntlets = 25f;
+
     [Header("Spawn Area")]
     [SerializeField] private float spawnY = 6f;
     [SerializeField] private float[] laneXPositions = new float[] { -2.0f, -1.0f, 0f, 1.0f, 2.0f };
@@ -33,7 +39,6 @@ public class ObstacleSpawner : MonoBehaviour
     [Header("Pattern Difficulty")]
     [SerializeField] private float doubleSpawnStartDifficulty = 0.25f;
     [SerializeField] private float burstSpawnStartDifficulty = 0.55f;
-
     [SerializeField] private float maxDoubleSpawnChance = 0.30f;
     [SerializeField] private float maxBurstChance = 0.15f;
 
@@ -49,34 +54,70 @@ public class ObstacleSpawner : MonoBehaviour
     private int lastLane = -1;
     private int sameLaneStreak = 0;
 
+    // --- NEW GAUNTLET STATE ---
+    private bool isGauntletActive = false;
+    private float nextGauntletTime;
+
     private void Start()
     {
         if (difficulty == null)
         {
             difficulty = FindFirstObjectByType<DifficultyManager>();
         }
-
         nextSpawnTime = Time.time + startDelay;
+
+        // Start the timer for the first Laser Gauntlet
+        nextGauntletTime = Time.time + timeBetweenGauntlets;
     }
 
     private void Update()
     {
+        // 1. Check if it's time to start a Gauntlet Phase
+        if (Time.time >= nextGauntletTime && !isGauntletActive && laserGatePrefab != null)
+        {
+            StartCoroutine(LaserGauntletRoutine());
+        }
+
+        // 2. Normal Spawning Timer
         if (Time.time >= nextSpawnTime)
         {
             SpawnPattern();
 
-            float interval = difficulty != null
-                ? difficulty.CurrentSpawnInterval
-                : 1.2f;
+            float interval = difficulty != null ? difficulty.CurrentSpawnInterval : 1.2f;
+
+            // Optional: If you want gates to spawn slightly further apart during the gauntlet, you can multiply the interval here
+            if (isGauntletActive) interval *= 1.5f;
 
             nextSpawnTime = Time.time + interval;
         }
     }
 
+    // --- GAUNTLET ROUTINE ---
+    private IEnumerator LaserGauntletRoutine()
+    {
+        isGauntletActive = true;
+
+        // Wait for the gauntlet duration to finish
+        yield return new WaitForSeconds(gauntletDuration);
+
+        isGauntletActive = false;
+
+        // Reset the timer for the next gauntlet
+        nextGauntletTime = Time.time + timeBetweenGauntlets;
+    }
+
     private void SpawnPattern()
     {
-        float difficulty01 = difficulty != null ? difficulty.Difficulty01 : 0f;
+        // If we are in the Laser Phase, OVERRIDE the complex patterns.
+        // We ONLY want single gates to spawn, no doubles or bursts.
+        if (isGauntletActive)
+        {
+            SpawnSingle();
+            return;
+        }
 
+        // --- Normal Pattern Logic ---
+        float difficulty01 = difficulty != null ? difficulty.Difficulty01 : 0f;
         float doubleChance = 0f;
         float burstChance = 0f;
 
@@ -130,8 +171,8 @@ public class ObstacleSpawner : MonoBehaviour
 
         int firstLane = GetNextFairLane();
         int secondLane = firstLane;
-
         int safety = 0;
+
         while (secondLane == firstLane && safety < 10)
         {
             secondLane = Random.Range(0, laneXPositions.Length);
@@ -141,15 +182,8 @@ public class ObstacleSpawner : MonoBehaviour
         GameObject firstPrefab = GetRandomUnlockedObstaclePrefab();
         GameObject secondPrefab = GetRandomUnlockedObstaclePrefab();
 
-        if (firstPrefab != null)
-        {
-            SpawnAtLane(firstLane, firstPrefab);
-        }
-
-        if (secondPrefab != null)
-        {
-            SpawnAtLane(secondLane, secondPrefab);
-        }
+        if (firstPrefab != null) SpawnAtLane(firstLane, firstPrefab);
+        if (secondPrefab != null) SpawnAtLane(secondLane, secondPrefab);
     }
 
     private IEnumerator SpawnBurst(int count)
@@ -188,10 +222,8 @@ public class ObstacleSpawner : MonoBehaviour
             }
         }
 
-        if (lane == lastLane)
-            sameLaneStreak++;
-        else
-            sameLaneStreak = 0;
+        if (lane == lastLane) sameLaneStreak++;
+        else sameLaneStreak = 0;
 
         lastLane = lane;
         return lane;
@@ -199,8 +231,14 @@ public class ObstacleSpawner : MonoBehaviour
 
     private GameObject GetRandomUnlockedObstaclePrefab()
     {
-        float survivalTime = Time.timeSinceLevelLoad;
+        // 1. OVERRIDE: If the Gauntlet is active, force the Laser Gate
+        if (isGauntletActive && laserGatePrefab != null)
+        {
+            return laserGatePrefab;
+        }
 
+        // 2. Normal Random Logic
+        float survivalTime = Time.timeSinceLevelLoad;
         List<ObstacleType> unlocked = new List<ObstacleType>();
         int totalWeight = 0;
 
@@ -214,18 +252,14 @@ public class ObstacleSpawner : MonoBehaviour
             totalWeight += obstacleType.spawnWeight;
         }
 
-        if (unlocked.Count == 0)
-        {
-            return null;
-        }
+        if (unlocked.Count == 0) return null;
 
         int randomWeight = Random.Range(0, totalWeight);
-
         int runningWeight = 0;
+
         foreach (ObstacleType obstacleType in unlocked)
         {
             runningWeight += obstacleType.spawnWeight;
-
             if (randomWeight < runningWeight)
             {
                 return obstacleType.prefab;

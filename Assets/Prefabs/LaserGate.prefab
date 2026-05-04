@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 610147141160564658}
   - component: {fileID: 7407404426135240093}
   m_Layer: 0
-  m_Name: Long Obstacle
+  m_Name: LaserGate
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 8026316070533005050}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3.5, y: 1, z: 1}
+  m_LocalPosition: {x: -4.9805, y: 0.0612, z: 0}
+  m_LocalScale: {x: 2.7717, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.2320754, b: 0.2320754, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -106,8 +106,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 359bd98dea8423a42963bdb82e1d150d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
-  fallbackSpeed: 4
+  speedMultiplier: 0.2
+  fallbackSpeed: 3
   destroyY: -6
+  pausesSpawning: 1
 --- !u!50 &610147141160564658
 Rigidbody2D:
   serializedVersion: 5

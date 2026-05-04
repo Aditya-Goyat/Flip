@@ -106,8 +106,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 359bd98dea8423a42963bdb82e1d150d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Obstacle
+  speedMultiplier: 1
   fallbackSpeed: 4
   destroyY: -6
+  pausesSpawning: 0
 --- !u!60 &-6477461866766372657
 PolygonCollider2D:
   m_ObjectHideFlags: 0

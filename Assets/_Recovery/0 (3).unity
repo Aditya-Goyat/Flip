@@ -1433,12 +1433,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0875d507ddd078f4ca3b5a05d00f0ab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlipManager
-  startMinFlipTime: 4
-  startMaxFlipTime: 7
-  endMinFlipTime: 1.5
-  endMaxFlipTime: 3
-  rampStartTime: 15
-  fullRampTime: 90
+  startMinFlipTime: 8
+  startMaxFlipTime: 12
+  endMinFlipTime: 2.5
+  endMaxFlipTime: 4.5
+  rampStartTime: 30
+  fullRampTime: 120
   minGapBetweenFlips: 1
   flipSound: {fileID: 0}
   flipAudioSource: {fileID: 2022527426}
@@ -2620,7 +2620,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   baseObstacleSpeed: 4
-  maxObstacleSpeed: 16
+  maxObstacleSpeed: 12
   obstacleSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -2715,7 +2715,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  enablePulse: 1
+  enablePulse: 0
   pulseStrength: 0.08
   pulseFrequency: 0.18
 --- !u!4 &1218491838
@@ -3859,9 +3859,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 7b34b396a2d2c2f4f9872b19031c24b1, type: 2}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 55183778a8f215f4ca2d4460dcd2195f, type: 3}
+  m_Resource: {fileID: 8300000, guid: a8b71377c1c8d244f9382b4d4bf7c727, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.8
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0
