@@ -54,8 +54,9 @@ public class ObstacleSpawner : MonoBehaviour
     private int lastLane = -1;
     private int sameLaneStreak = 0;
 
-    // --- NEW GAUNTLET STATE ---
+    // --- GAUNTLET STATES ---
     private bool isGauntletActive = false;
+    private bool isTransitioning = false; // NEW: Stops spawning while the screen clears
     private float nextGauntletTime;
 
     private void Start()
@@ -66,57 +67,64 @@ public class ObstacleSpawner : MonoBehaviour
         }
         nextSpawnTime = Time.time + startDelay;
 
-        // Start the timer for the first Laser Gauntlet
         nextGauntletTime = Time.time + timeBetweenGauntlets;
     }
 
     private void Update()
     {
-        // 1. Check if it's time to start a Gauntlet Phase
-        if (Time.time >= nextGauntletTime && !isGauntletActive && laserGatePrefab != null)
+        // 1. Check if it's time to start a Gauntlet Phase (and we aren't already transitioning)
+        if (Time.time >= nextGauntletTime && !isGauntletActive && !isTransitioning && laserGatePrefab != null)
         {
             StartCoroutine(LaserGauntletRoutine());
         }
 
-        // 2. Normal Spawning Timer
-        if (Time.time >= nextSpawnTime)
+        // 2. Normal Spawning Timer (ONLY spawn if we are not in a transition phase)
+        if (Time.time >= nextSpawnTime && !isTransitioning)
         {
             SpawnPattern();
 
             float interval = difficulty != null ? difficulty.CurrentSpawnInterval : 1.2f;
 
-            // Optional: If you want gates to spawn slightly further apart during the gauntlet, you can multiply the interval here
             if (isGauntletActive) interval *= 1.5f;
 
             nextSpawnTime = Time.time + interval;
         }
     }
 
-    // --- GAUNTLET ROUTINE ---
+    // --- UPGRADED GAUNTLET ROUTINE ---
     private IEnumerator LaserGauntletRoutine()
     {
-        isGauntletActive = true;
+        // 1. CLEAR THE SCREEN
+        // Stop all spawning for 3 seconds so the Chaser and normal obstacles fall away
+        isTransitioning = true;
+        yield return new WaitForSeconds(3f);
+        isTransitioning = false;
 
-        // Wait for the gauntlet duration to finish
+        // 2. START THE GAUNTLET
+        isGauntletActive = true;
+        nextSpawnTime = Time.time; // Immediately drop the first Laser Gate
+
         yield return new WaitForSeconds(gauntletDuration);
 
+        // 3. BREATHER PHASE
+        // Stop the gauntlet, but give the player a 2-second break before normal chaos resumes
         isGauntletActive = false;
+        isTransitioning = true;
+        yield return new WaitForSeconds(2f);
+        isTransitioning = false;
 
-        // Reset the timer for the next gauntlet
+        // Reset the timer for the next gauntlet event
         nextGauntletTime = Time.time + timeBetweenGauntlets;
     }
 
     private void SpawnPattern()
     {
-        // If we are in the Laser Phase, OVERRIDE the complex patterns.
-        // We ONLY want single gates to spawn, no doubles or bursts.
         if (isGauntletActive)
         {
             SpawnSingle();
             return;
         }
 
-        // --- Normal Pattern Logic ---
         float difficulty01 = difficulty != null ? difficulty.Difficulty01 : 0f;
         float doubleChance = 0f;
         float burstChance = 0f;
@@ -155,10 +163,7 @@ public class ObstacleSpawner : MonoBehaviour
         int lane = GetNextFairLane();
         GameObject obstaclePrefab = GetRandomUnlockedObstaclePrefab();
 
-        if (obstaclePrefab != null)
-        {
-            SpawnAtLane(lane, obstaclePrefab);
-        }
+        if (obstaclePrefab != null) SpawnAtLane(lane, obstaclePrefab);
     }
 
     private void SpawnDouble()
@@ -193,15 +198,9 @@ public class ObstacleSpawner : MonoBehaviour
             int lane = GetNextFairLane();
             GameObject obstaclePrefab = GetRandomUnlockedObstaclePrefab();
 
-            if (obstaclePrefab != null)
-            {
-                SpawnAtLane(lane, obstaclePrefab);
-            }
+            if (obstaclePrefab != null) SpawnAtLane(lane, obstaclePrefab);
 
-            if (i < count - 1)
-            {
-                yield return new WaitForSeconds(burstGap);
-            }
+            if (i < count - 1) yield return new WaitForSeconds(burstGap);
         }
     }
 
@@ -231,13 +230,8 @@ public class ObstacleSpawner : MonoBehaviour
 
     private GameObject GetRandomUnlockedObstaclePrefab()
     {
-        // 1. OVERRIDE: If the Gauntlet is active, force the Laser Gate
-        if (isGauntletActive && laserGatePrefab != null)
-        {
-            return laserGatePrefab;
-        }
+        if (isGauntletActive && laserGatePrefab != null) return laserGatePrefab;
 
-        // 2. Normal Random Logic
         float survivalTime = Time.timeSinceLevelLoad;
         List<ObstacleType> unlocked = new List<ObstacleType>();
         int totalWeight = 0;
@@ -260,10 +254,7 @@ public class ObstacleSpawner : MonoBehaviour
         foreach (ObstacleType obstacleType in unlocked)
         {
             runningWeight += obstacleType.spawnWeight;
-            if (randomWeight < runningWeight)
-            {
-                return obstacleType.prefab;
-            }
+            if (randomWeight < runningWeight) return obstacleType.prefab;
         }
 
         return unlocked[unlocked.Count - 1].prefab;

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3764934994816927375}
   m_Layer: 0
   m_Name: LaserGates
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 6496127810526115653}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.47799, y: -0.40973, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -41,21 +41,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3764934994816927375}
     m_Modifications:
+    - target: {fileID: 3209487881473226189, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
+      propertyPath: fallbackSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3209487881473226189, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
+      propertyPath: speedMultiplier
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2.65
+      value: 4.91575
       objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.25
+      value: 0.36620763
       objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.5920099
+      value: -2.7249
       objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.00006005168
+      value: 0.058
       objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalPosition.z
@@ -111,21 +119,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3764934994816927375}
     m_Modifications:
+    - target: {fileID: 3209487881473226189, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
+      propertyPath: fallbackSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3209487881473226189, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
+      propertyPath: speedMultiplier
+      value: 0.15
+      objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2.65
+      value: 5.39752
       objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.25
+      value: 0.346825
       objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.0479898
+      value: 4.4218
       objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.00006005168
+      value: 0.0484
       objectReference: {fileID: 0}
     - target: {fileID: 3612795162882178520, guid: 88858ec78e2d76149a70f4edac065356, type: 3}
       propertyPath: m_LocalPosition.z

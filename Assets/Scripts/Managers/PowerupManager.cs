@@ -38,30 +38,30 @@ public class PowerupManager : MonoBehaviour
         switch (type)
         {
             case PowerupType.Shield:
-                if (Haptics_Manager.Instance != null)
+                /*if (Haptics_Manager.Instance != null)
                 {
                     Haptics_Manager.Instance.ShieldPickup();
-                }
+                }*/
 
                 if (shieldRoutine != null) StopCoroutine(shieldRoutine);
                 shieldRoutine = StartCoroutine(ShieldRoutine());
                 break;
 
             case PowerupType.SlowTime:
-                if (Haptics_Manager.Instance != null)
+                /*if (Haptics_Manager.Instance != null)
                 {
                     Haptics_Manager.Instance.SlowTimePickup();
-                }
+                }*/
 
                 if (slowTimeRoutine != null) StopCoroutine(slowTimeRoutine);
                 slowTimeRoutine = StartCoroutine(SlowTimeRoutine());
                 break;
 
             case PowerupType.SpeedBoost:
-                if (Haptics_Manager.Instance != null)
+                /*if (Haptics_Manager.Instance != null)
                 {
                     Haptics_Manager.Instance.SpeedBoostPickup();
-                }
+                }*/
 
                 if (speedBoostRoutine != null) StopCoroutine(speedBoostRoutine);
                 speedBoostRoutine = StartCoroutine(SpeedBoostRoutine());

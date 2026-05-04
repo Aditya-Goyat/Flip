@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections;
@@ -11,8 +10,12 @@ public class GameManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] GameObject deathCanvas;
 
-    [Header("HUD Elements")]
-    public TextMeshProUGUI glitchWarningText;
+    [Header("HUD Elements (Sprite 2D)")]
+    [Tooltip("Drag your 2D Sprite object here")]
+    public Transform glitchWarningSprite;
+    public float offScreenX = -10f;
+    public float onScreenX = 0f;
+    public float slideDuration = 0.5f;
 
     [Header("Theme Settings - World")]
     public Color normalColor = new Color(0f, 1f, 1f);
@@ -35,6 +38,7 @@ public class GameManager : MonoBehaviour
 
     bool isDead;
     bool hasRevived;
+    private Coroutine slideCoroutine;
 
     void Awake()
     {
@@ -45,8 +49,15 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         ApplyColor(false);
-        if (glitchWarningText != null) glitchWarningText.gameObject.SetActive(false);
-        
+
+        // Ensure the sprite starts hidden off-screen
+        if (glitchWarningSprite != null)
+        {
+            Vector3 startPos = glitchWarningSprite.position;
+            startPos.x = offScreenX;
+            glitchWarningSprite.position = startPos;
+        }
+
         if (ScoreManager.Instance != null) ScoreManager.Instance.StartScore();
     }
 
@@ -54,25 +65,21 @@ public class GameManager : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
-
         if (ScoreManager.Instance != null) ScoreManager.Instance.StopScore();
 
-        // Check if we are in glitch mode
         bool isGlitch = false;
         if (FlipManager.Instance != null) isGlitch = FlipManager.IsInverted;
 
-        // Trigger VFX Sequence (Particles + Pause)
         if (VFXManager.Instance != null && PlayerController.Instance != null)
         {
             VFXManager.Instance.TriggerDeathSequence(PlayerController.Instance.transform.position, isGlitch);
         }
         else
         {
-            ShowDeathScreen(); // Fallback
+            ShowDeathScreen();
         }
     }
 
-    // Called by VFXManager after the delay
     public void ShowDeathScreen()
     {
         if (deathCanvas != null) deathCanvas.SetActive(true);
@@ -87,22 +94,19 @@ public class GameManager : MonoBehaviour
     {
         hasRevived = true;
         isDead = false;
-
         Time.timeScale = 1f;
+
         if (deathCanvas != null) deathCanvas.SetActive(false);
 
         if (PlayerController.Instance != null)
         {
-            // FIX: Turn the player's GameObject back on after the VFX Manager hid it
             PlayerController.Instance.gameObject.SetActive(true);
-
             PlayerController.Instance.Revive();
         }
-        ObstacleCleaner.ClearAll();
 
         if (FlipManager.Instance != null) FlipManager.Instance.FreezeFlips(3f);
 
-        // FIX: Tell the ScoreManager to resume counting from where it left off!
+        // Resume the score timer where it left off
         if (ScoreManager.Instance != null) ScoreManager.Instance.ResumeScore();
     }
 
@@ -114,10 +118,41 @@ public class GameManager : MonoBehaviour
 
     public void ToggleGlitchUI(bool isGlitching)
     {
-        if (glitchWarningText != null) glitchWarningText.gameObject.SetActive(isGlitching);
         ApplyColor(isGlitching);
-        if (isGlitching) StartCoroutine(GlitchTextAnimation());
-        else StopAllCoroutines();
+
+        // Slide the 2D Sprite in or out
+        if (glitchWarningSprite != null)
+        {
+            if (slideCoroutine != null) StopCoroutine(slideCoroutine);
+
+            float targetX = isGlitching ? onScreenX : offScreenX;
+            slideCoroutine = StartCoroutine(SlideSpriteRoutine(targetX));
+        }
+    }
+
+    private IEnumerator SlideSpriteRoutine(float targetX)
+    {
+        float elapsedTime = 0f;
+        Vector3 startPos = glitchWarningSprite.position;
+
+        while (elapsedTime < slideDuration)
+        {
+            elapsedTime += Time.deltaTime;
+
+            // SmoothStep creates a nice "ease in, ease out" flow animation
+            float t = Mathf.SmoothStep(0f, 1f, elapsedTime / slideDuration);
+
+            Vector3 newPos = startPos;
+            newPos.x = Mathf.Lerp(startPos.x, targetX, t);
+            glitchWarningSprite.position = newPos;
+
+            yield return null;
+        }
+
+        // Snap exactly to the target to finish
+        Vector3 finalPos = startPos;
+        finalPos.x = targetX;
+        glitchWarningSprite.position = finalPos;
     }
 
     private void ApplyColor(bool isGlitching)
@@ -127,33 +162,25 @@ public class GameManager : MonoBehaviour
 
         if (playerRenderer != null) playerRenderer.color = playerColor;
 
-        foreach (var sprite in glitchSprites) if (sprite != null) sprite.color = worldColor;
-        foreach (var txt in uiTexts) if (txt != null) txt.color = worldColor;
+        foreach (var sprite in glitchSprites)
+            if (sprite != null) sprite.color = worldColor;
+
+        foreach (var txt in uiTexts)
+            if (txt != null) txt.color = worldColor;
 
         if (movingGridRenderer != null)
-            movingGridRenderer.material.color = isGlitching ? new Color(0.21f, 0.46f, 0.01f, 1f) : new Color(0f, 0.18f, 0.28f, 1f);
+            movingGridRenderer.material.color = isGlitching ?
+                new Color(0.21f, 0.46f, 0.01f, 1f) : new Color(0f, 0.18f, 0.28f, 1f);
 
         if (secondaryGridRenderer != null)
             secondaryGridRenderer.material.color = worldColor * 0.6f;
 
         if (gradientOverlay != null)
-            gradientOverlay.color = isGlitching ? new Color(1f, 0.18f, 0f, 1f) : new Color(0.11f, 0.61f, 0.76f, 0.63f);
+            gradientOverlay.color = isGlitching ?
+                new Color(1f, 0.18f, 0f, 1f) : new Color(0.11f, 0.61f, 0.76f, 0.63f);
 
         if (depthOverlay != null)
-            depthOverlay.color = isGlitching ? new Color(1f, 0.58f, 0f, 0.8f) : new Color(1f, 1f, 1f, 1f);
-    }
-
-    private IEnumerator GlitchTextAnimation()
-    {
-        if (!glitchWarningText) yield break;
-        RectTransform rect = glitchWarningText.rectTransform;
-        Vector2 originalPos = Vector2.zero;
-
-        while (true)
-        {
-            rect.anchoredPosition = originalPos + new Vector2(Random.Range(-5f, 5f), Random.Range(-5f, 5f));
-            glitchWarningText.color = Random.value > 0.8f ? Color.white : glitchColor;
-            yield return new WaitForSeconds(0.05f);
-        }
+            depthOverlay.color = isGlitching ?
+                new Color(1f, 0.58f, 0f, 0.8f) : new Color(1f, 1f, 1f, 1f);
     }
 }

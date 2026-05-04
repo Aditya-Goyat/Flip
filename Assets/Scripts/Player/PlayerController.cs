@@ -125,10 +125,10 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
-        if (Haptics_Manager.Instance != null)
+        /*if (Haptics_Manager.Instance != null)
         {
             Haptics_Manager.Instance.DeathTap();
-        }
+        }*/
 
         GameManager.Instance.OnPlayerDeath();
     }
