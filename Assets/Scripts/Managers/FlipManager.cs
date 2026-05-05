@@ -76,10 +76,10 @@ public class FlipManager : MonoBehaviour
         lastFlipTime = Time.time;
 
         // Play flip haptic
-        /*if (Haptics_Manager.Instance != null)
+        if (Haptics_Manager.Instance != null)
         {
             Haptics_Manager.Instance.FlipTap();
-        }*/
+        }
 
         // Play the flip sound effect
         if (flipAudioSource != null && flipSound != null)
