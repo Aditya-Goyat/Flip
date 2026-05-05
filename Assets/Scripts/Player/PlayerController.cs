@@ -1,8 +1,11 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
+
 
 public class PlayerController : MonoBehaviour
 {
+
     [Header("Movement")]
     [SerializeField] private float fallbackMoveSpeed = 8f;
 
@@ -13,12 +16,27 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Small padding so the player sprite doesn't go half off screen.")]
     [SerializeField] private float edgePadding = 0.2f;
 
+    [Header("Double-Tap Settings")]
+    [Tooltip("Maximum seconds between two taps to count as a double-tap.")]
+    [SerializeField] private float doubleTapWindow = 0.3f;
+
+    [Tooltip("Maximum seconds a press can last and still be considered a 'tap' " +
+             "(prevents a slow hold from accidentally triggering the surge).")]
+    [SerializeField] private float maxTapDuration = 0.18f;
+
+
     private float direction;
     private float currentVelocity;
     private bool isDead;
 
     private float leftLimit;
     private float rightLimit;
+
+    // --- Double-tap tracking (completely separate from movement) ---
+    private float lastTapTime = -999f;   // time of the most recent valid tap
+    private float pressStartTime = -999f;   // when the current press began
+    private bool pressActive = false;   // is a press currently held?
+
 
     public static PlayerController Instance;
 
@@ -30,81 +48,160 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         if (difficultyManager == null)
-        {
             difficultyManager = FindFirstObjectByType<DifficultyManager>();
-        }
 
         CalculateScreenBounds();
-    }
-
-    private void CalculateScreenBounds()
-    {
-        Camera cam = Camera.main;
-
-        Vector3 left = cam.ScreenToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
-        Vector3 right = cam.ScreenToWorldPoint(new Vector3(Screen.width, 0, cam.nearClipPlane));
-
-        leftLimit = left.x + edgePadding;
-        rightLimit = right.x - edgePadding;
     }
 
     private void Update()
     {
         if (isDead) return;
 
+        HandleMovement();
+        HandleDoubleTap();
+    }
+
+    private void HandleMovement()
+    {
         direction = 0f;
 
+        // ── Touch ────────────────────────────────────────────────────────────
         if (Touchscreen.current != null &&
             Touchscreen.current.primaryTouch.press.isPressed)
         {
             float x = Touchscreen.current.primaryTouch.position.ReadValue().x;
-            direction = x < Screen.width / 2f ? -1f : 1f;
+            direction = x < Screen.width * 0.5f ? -1f : 1f;
         }
+        // ── Mouse (editor / desktop fallback) ────────────────────────────────
         else if (Mouse.current != null &&
                  Mouse.current.leftButton.isPressed)
         {
             float x = Mouse.current.position.ReadValue().x;
-            direction = x < Screen.width / 2f ? -1f : 1f;
+            direction = x < Screen.width * 0.5f ? -1f : 1f;
         }
 
+        // Respect screen-flip modifier if present
         if (FlipManager.IsInverted)
             direction *= -1f;
 
-        float currentMoveSpeed = fallbackMoveSpeed;
+        // Resolve move speed from difficulty, then apply powerup multiplier
+        float speed = difficultyManager != null
+            ? difficultyManager.CurrentPlayerMoveSpeed
+            : fallbackMoveSpeed;
 
-        if (difficultyManager != null)
-        {
-            currentMoveSpeed = difficultyManager.CurrentPlayerMoveSpeed;
-        }
+        // ── Powerup speed modifier – commented out for Pure Skill mode ────────
+        // if (PowerupManager.Instance != null)
+        //     speed *= PowerupManager.Instance.PlayerSpeedMultiplier;
 
-        if (PowerupManager.Instance != null)
-        {
-            currentMoveSpeed *= PowerupManager.Instance.PlayerSpeedMultiplier;
-        }
+        // Smooth acceleration / deceleration
+        float targetVelocity = direction * speed;
+        currentVelocity = Mathf.Lerp(currentVelocity, targetVelocity, 12f * Time.deltaTime);
 
         Vector3 pos = transform.position;
-
-        float targetVelocity = direction * currentMoveSpeed;
-        currentVelocity = Mathf.Lerp(currentVelocity, targetVelocity, 12f * Time.deltaTime);
         pos.x += currentVelocity * Time.deltaTime;
-
         pos.x = Mathf.Clamp(pos.x, leftLimit, rightLimit);
-
         transform.position = pos;
     }
+
+    private void HandleDoubleTap()
+    {
+        bool pressedThisFrame = WasPressedThisFrame();
+        bool releasedThisFrame = WasReleasedThisFrame();
+
+        if (pressedThisFrame && !pressActive)
+        {
+            pressActive = true;
+            pressStartTime = Time.unscaledTime;   // unscaled so pause doesn't break it
+        }
+
+        if (releasedThisFrame && pressActive)
+        {
+            pressActive = false;
+
+            float pressDuration = Time.unscaledTime - pressStartTime;
+
+            if (pressDuration <= maxTapDuration)
+            {
+                // Valid tap – check for double-tap
+                float timeSinceLast = Time.unscaledTime - lastTapTime;
+
+                if (timeSinceLast <= doubleTapWindow)
+                {
+                    // ✅ Double-tap confirmed
+                    SurgeManager.Instance?.TryActivateSurge();
+                    lastTapTime = -999f; // Reset so a third tap doesn't re-fire
+                }
+                else
+                {
+                    // First tap of a potential pair – record the time
+                    lastTapTime = Time.unscaledTime;
+                }
+            }
+            else
+            {
+                // Long hold → not a tap, clear first-tap memory
+                lastTapTime = -999f;
+            }
+        }
+    }
+
+    // ── Input helpers (returns true only on the frame the state changed) ─────
+
+    private bool WasPressedThisFrame()
+    {
+        if (Touchscreen.current != null &&
+            Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+            return true;
+
+        if (Mouse.current != null &&
+            Mouse.current.leftButton.wasPressedThisFrame)
+            return true;
+
+        return false;
+    }
+
+    private bool WasReleasedThisFrame()
+    {
+        if (Touchscreen.current != null &&
+            Touchscreen.current.primaryTouch.press.wasReleasedThisFrame)
+            return true;
+
+        if (Mouse.current != null &&
+            Mouse.current.leftButton.wasReleasedThisFrame)
+            return true;
+
+        return false;
+    }
+
+
+    private void CalculateScreenBounds()
+    {
+        Camera cam = Camera.main;
+        Vector3 left = cam.ScreenToWorldPoint(new Vector3(0, 0, cam.nearClipPlane));
+        Vector3 right = cam.ScreenToWorldPoint(new Vector3(Screen.width, 0, cam.nearClipPlane));
+        leftLimit = left.x + edgePadding;
+        rightLimit = right.x - edgePadding;
+    }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (isDead) return;
 
-        if (collision.gameObject.CompareTag("Obstacle"))
-        {
-            if (PowerupManager.Instance != null && PowerupManager.Instance.ConsumeShield())
-            {
-                Destroy(collision.gameObject);
-                return;
-            }
+        if (!collision.gameObject.CompareTag("Obstacle")) return;
 
+        if (SurgeManager.Instance != null && SurgeManager.Instance.IsSurging)
+        {
+            // ── Bulldozer Mode
+            // Obstacle is destroyed; player keeps moving unharmed.
+            Destroy(collision.gameObject);
+
+            // Optional VFX – uncomment when VFXManager is ready:
+            // VFXManager.Instance.PlayExplosion(collision.transform.position);
+        }
+        else
+        {
+            // ── Normal Mode
             isDead = true;
             Die();
         }
@@ -112,23 +209,22 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Powerup"))
-        {
-            Powerup powerup = other.GetComponent<Powerup>();
-            if (powerup != null && PowerupManager.Instance != null)
-            {
-                PowerupManager.Instance.CollectPowerup(powerup.GetPowerupType());
-                Destroy(other.gameObject);
-            }
-        }
+        // ── Powerup collection – commented out for Pure Skill mode ────────────
+        // if (other.CompareTag("Powerup"))
+        // {
+        //     Powerup powerup = other.GetComponent<Powerup>();
+        //     if (powerup != null && PowerupManager.Instance != null)
+        //     {
+        //         PowerupManager.Instance.CollectPowerup(powerup.GetPowerupType());
+        //         Destroy(other.gameObject);
+        //     }
+        // }
     }
 
     private void Die()
     {
         if (Haptics_Manager.Instance != null)
-        {
             Haptics_Manager.Instance.DeathTap();
-        }
 
         GameManager.Instance.OnPlayerDeath();
     }
@@ -137,6 +233,8 @@ public class PlayerController : MonoBehaviour
     {
         isDead = false;
         currentVelocity = 0f;
+        pressActive = false;        // clear any dangling press state
+        lastTapTime = -999f;
         transform.position = new Vector3(0f, -3.5f, 0f);
         StartCoroutine(Invulnerability());
     }
