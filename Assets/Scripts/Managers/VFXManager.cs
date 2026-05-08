@@ -20,6 +20,14 @@ public class VFXManager : MonoBehaviour
     [Tooltip("Assign an AudioSource component attached to this GameObject")]
     [SerializeField] private AudioSource vfxAudioSource;
 
+    [Header("Obstacle Destruction")]
+    [Tooltip("Assign your obstacle explosion/shatter particle prefab here")]
+    [SerializeField] private ParticleSystem obstacleDebrisPrefab;
+
+    [Header("Surge Effects")]
+    [Tooltip("Optional: Assign an activation burst/flash prefab here")]
+    [SerializeField] private ParticleSystem surgeActivationPrefab;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -35,6 +43,36 @@ public class VFXManager : MonoBehaviour
     public void TriggerDeathSequence(Vector3 position, bool isGlitchMode)
     {
         StartCoroutine(DeathSequenceRoutine(position, isGlitchMode));
+    }
+
+    public void PlayExplosion(Vector3 position)
+    {
+        if (obstacleDebrisPrefab != null)
+        {
+            // Spawn the explosion slightly in front of the background
+            Vector3 spawnPos = new Vector3(position.x, position.y, -5f);
+            ParticleSystem p = Instantiate(obstacleDebrisPrefab, spawnPos, Quaternion.identity);
+
+            // Ensure it cleans itself up
+            Destroy(p.gameObject, 2.0f);
+        }
+    }
+
+    // --- NEW: Surge Activation Burst ---
+    public void PlaySurgeAura(Transform playerTransform)
+    {
+        if (surgeActivationPrefab != null && playerTransform != null)
+        {
+            // Spawn the burst effect slightly in front of the player
+            Vector3 spawnPos = new Vector3(playerTransform.position.x, playerTransform.position.y, -5f);
+            ParticleSystem p = Instantiate(surgeActivationPrefab, spawnPos, Quaternion.identity);
+
+            // Parent it to the player so the burst follows the ship forward
+            p.transform.SetParent(playerTransform);
+
+            // Ensure it cleans itself up after 2 seconds
+            Destroy(p.gameObject, 2.0f);
+        }
     }
 
     private IEnumerator DeathSequenceRoutine(Vector3 position, bool isGlitchMode)

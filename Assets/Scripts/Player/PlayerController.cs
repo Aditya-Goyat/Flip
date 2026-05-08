@@ -24,6 +24,12 @@ public class PlayerController : MonoBehaviour
              "(prevents a slow hold from accidentally triggering the surge).")]
     [SerializeField] private float maxTapDuration = 0.18f;
 
+    [Header("Surge Visuals")]
+    [SerializeField] private GameObject rushingVfxObject; // Drag your rushing VFX here
+    [SerializeField] private float normalYPosition = -3.5f;
+    [SerializeField] private float surgeYPosition = -1.5f;
+    [SerializeField] private float surgeLerpSpeed = 5f;
+
 
     private float direction;
     private float currentVelocity;
@@ -63,6 +69,15 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
+        // --- NEW: Check if we are currently surging ---
+        bool isSurging = SurgeManager.Instance != null && SurgeManager.Instance.IsSurging;
+
+        // Toggle the rushing VFX
+        if (rushingVfxObject != null)
+        {
+            rushingVfxObject.SetActive(isSurging);
+        }
+
         direction = 0f;
 
         // ── Touch ────────────────────────────────────────────────────────────
@@ -100,6 +115,11 @@ public class PlayerController : MonoBehaviour
         Vector3 pos = transform.position;
         pos.x += currentVelocity * Time.deltaTime;
         pos.x = Mathf.Clamp(pos.x, leftLimit, rightLimit);
+
+        // --- NEW: Y-Axis Forward/Backward Slide ---
+        float targetY = isSurging ? surgeYPosition : normalYPosition;
+        pos.y = Mathf.Lerp(pos.y, targetY, surgeLerpSpeed * Time.deltaTime);
+
         transform.position = pos;
     }
 
@@ -196,8 +216,11 @@ public class PlayerController : MonoBehaviour
             // Obstacle is destroyed; player keeps moving unharmed.
             Destroy(collision.gameObject);
 
-            // Optional VFX – uncomment when VFXManager is ready:
-            // VFXManager.Instance.PlayExplosion(collision.transform.position);
+            // Trigger the explosion we just added to the VFXManager!
+            if (VFXManager.Instance != null)
+            {
+                VFXManager.Instance.PlayExplosion(collision.transform.position);
+            }
         }
         else
         {

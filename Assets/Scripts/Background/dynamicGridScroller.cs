@@ -7,6 +7,10 @@ public class dynamicGridScroller : MonoBehaviour
     public float maxSpeed = 3.0f;   // Top speed (High speed feel)
     public float accelerationDuration = 60f; // Time in seconds to reach max speed
 
+    [Header("Surge Settings")]
+    [Tooltip("How much faster the grid scrolls during Bulldozer Mode")]
+    public float surgeSpeedMultiplier = 3.0f;
+
     [Header("Scroll Direction")]
     [Tooltip("Check this to scroll downward (top to bottom)")]
     public bool scrollDown = true;
@@ -50,8 +54,12 @@ public class dynamicGridScroller : MonoBehaviour
         // 1. Calculate how far along the 'acceleration curve' we are (0 to 1)
         float t = Mathf.Clamp01(Time.timeSinceLevelLoad / accelerationDuration);
 
-        // 2. Interpolate speed based on that time
-        float currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+        // 2. Interpolate base speed based on that time
+        float baseSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+
+        // --- NEW: Check Surge state and apply multiplier ---
+        bool isSurging = SurgeManager.Instance != null && SurgeManager.Instance.IsSurging;
+        float currentSpeed = isSurging ? baseSpeed * surgeSpeedMultiplier : baseSpeed;
 
         // 3. Integrate position (Speed * Time)
         // Negative value for downward scroll, positive for upward

@@ -12,9 +12,9 @@ public class GameManager : MonoBehaviour
 
     [Header("HUD Elements (Sprite 2D)")]
     [Tooltip("Drag your 2D Sprite object here")]
-    public Transform glitchWarningSprite;
-    public float offScreenX = -10f;
-    public float onScreenX = 0f;
+    public RectTransform glitchWarningSprite; // Change this from Transform!
+    public float onScreenX = 0f;              // Center of the screen
+    public float offScreenX = -1500f;         // Off-screen to the left (adjust as needed)
     public float slideDuration = 0.5f;
 
     [Header("Theme Settings - World")]
@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
     {
         ApplyColor(isGlitching);
 
-        // Slide the 2D Sprite in or out
+        // Slide the UI Image in or out
         if (glitchWarningSprite != null)
         {
             if (slideCoroutine != null) StopCoroutine(slideCoroutine);
@@ -133,7 +133,9 @@ public class GameManager : MonoBehaviour
     private IEnumerator SlideSpriteRoutine(float targetX)
     {
         float elapsedTime = 0f;
-        Vector3 startPos = glitchWarningSprite.position;
+
+        // FIX: Grab the anchoredPosition (UI space) instead of position (World space)
+        Vector2 startPos = glitchWarningSprite.anchoredPosition;
 
         while (elapsedTime < slideDuration)
         {
@@ -142,17 +144,19 @@ public class GameManager : MonoBehaviour
             // SmoothStep creates a nice "ease in, ease out" flow animation
             float t = Mathf.SmoothStep(0f, 1f, elapsedTime / slideDuration);
 
-            Vector3 newPos = startPos;
+            Vector2 newPos = startPos;
             newPos.x = Mathf.Lerp(startPos.x, targetX, t);
-            glitchWarningSprite.position = newPos;
+
+            // FIX: Apply back to anchoredPosition
+            glitchWarningSprite.anchoredPosition = newPos;
 
             yield return null;
         }
 
         // Snap exactly to the target to finish
-        Vector3 finalPos = startPos;
+        Vector2 finalPos = startPos;
         finalPos.x = targetX;
-        glitchWarningSprite.position = finalPos;
+        glitchWarningSprite.anchoredPosition = finalPos;
     }
 
     private void ApplyColor(bool isGlitching)

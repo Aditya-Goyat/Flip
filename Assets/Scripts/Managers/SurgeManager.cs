@@ -2,20 +2,6 @@
 using UnityEngine.UI;
 using System.Collections;
 
-// ─────────────────────────────────────────────────────────────────────────────
-//  SurgeManager  –  Flip Rush
-//
-//  Responsibilities:
-//    • Fills the surge meter passively while the player survives.
-//    • Clamps the meter at 100% and never overfills.
-//    • Exposes TryActivateSurge() – called by PlayerController on double-tap.
-//    • Runs the 4-second Bulldozer Mode coroutine and resets afterward.
-//    • Drives a UI Slider and an optional "ready" glow image.
-//
-//  Pure Skill mode: the meter fills only through time survived.
-//  No powerup hooks are wired in here.
-// ─────────────────────────────────────────────────────────────────────────────
-
 public class SurgeManager : MonoBehaviour
 {
     // ── Singleton ─────────────────────────────────────────────────────────────
@@ -134,7 +120,7 @@ public class SurgeManager : MonoBehaviour
         // AudioManager.Instance.PlaySFX(surgeActivateSound);
 
         //Hook: spawn surge VFX on player 
-        // VFXManager.Instance.PlaySurgeAura(PlayerController.Instance.transform);
+        VFXManager.Instance.PlaySurgeAura(PlayerController.Instance.transform);
 
         yield return new WaitForSeconds(surgeDuration);
 
@@ -162,4 +148,5 @@ public class SurgeManager : MonoBehaviour
         // Hook: haptic nudge on mobile
         // Haptics_Manager.Instance.LightTap();
     }
+
 }

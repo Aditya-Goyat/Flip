@@ -5,6 +5,7 @@ public class AdsManager : MonoBehaviour,
     IUnityAdsInitializationListener,
     IUnityAdsShowListener
 {
+    // CRITICAL: You MUST replace this with your actual Game ID from the Unity Dashboard!
     [SerializeField] private string gameId = "YOUR_ANDROID_GAME_ID";
     private const string INTERSTITIAL_ID = "Interstitial_Android";
     private const string REWARDED_ID = "Rewarded_Android";
@@ -24,8 +25,16 @@ public class AdsManager : MonoBehaviour,
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
 
-        Advertisement.Initialize(gameId, true, this); // testMode = true
+    private void Start()
+    {
+        // FIX: Moved to Start to prevent Main Thread blocking on Android 16.
+        // Safety check to ensure it doesn't double-initialize.
+        if (!Advertisement.isInitialized && Advertisement.isSupported)
+        {
+            Advertisement.Initialize(gameId, true, this); // testMode = true
+        }
     }
 
     // ================= INIT =================
