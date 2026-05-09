@@ -2,7 +2,6 @@
 using UnityEngine.InputSystem;
 using System.Collections;
 
-
 public class PlayerController : MonoBehaviour
 {
 
@@ -26,6 +25,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Surge Visuals")]
     [SerializeField] private GameObject rushingVfxObject; // Drag your rushing VFX here
+    [SerializeField] private GameObject shipVfxObject;    // <--- NEW: Drag your Ship FX here!
     [SerializeField] private float normalYPosition = -3.5f;
     [SerializeField] private float surgeYPosition = -1.5f;
     [SerializeField] private float surgeLerpSpeed = 5f;
@@ -72,10 +72,15 @@ public class PlayerController : MonoBehaviour
         // --- NEW: Check if we are currently surging ---
         bool isSurging = SurgeManager.Instance != null && SurgeManager.Instance.IsSurging;
 
-        // Toggle the rushing VFX
+        // Toggle the rushing VFX and the new Ship FX
         if (rushingVfxObject != null)
         {
             rushingVfxObject.SetActive(isSurging);
+        }
+
+        if (shipVfxObject != null)
+        {
+            shipVfxObject.SetActive(isSurging);
         }
 
         direction = 0f;

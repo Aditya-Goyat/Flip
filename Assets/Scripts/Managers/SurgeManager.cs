@@ -25,6 +25,13 @@ public class SurgeManager : MonoBehaviour
              "Enable/disable it here rather than animating the slider tint.")]
     public Image readyGlowImage;
 
+    [Header("Audio")]
+    [Tooltip("Assign the audio clip you want to play when Surge activates.")]
+    public AudioClip surgeActivateSound;
+
+    [Tooltip("Assign an AudioSource, or let the script find one automatically.")]
+    public AudioSource audioSource;
+
     // ── Runtime State ─────────────────────────────────────────────────────────
 
     private float currentFill = 0f;
@@ -47,6 +54,12 @@ public class SurgeManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        // Auto-grab an AudioSource if we didn't drag one into the Inspector manually
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
     }
 
     private void Update()
@@ -116,11 +129,15 @@ public class SurgeManager : MonoBehaviour
         if (readyGlowImage != null)
             readyGlowImage.enabled = false;
 
-        // Hook: play surge activation sound 
-        // AudioManager.Instance.PlaySFX(surgeActivateSound);
+        // --- PLAY AUDIO HERE ---
+        if (surgeActivateSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(surgeActivateSound);
+        }
 
         //Hook: spawn surge VFX on player 
-        VFXManager.Instance.PlaySurgeAura(PlayerController.Instance.transform);
+        // Uncomment if VFXManager is ready!
+        // VFXManager.Instance.PlaySurgeAura(PlayerController.Instance.transform);
 
         yield return new WaitForSeconds(surgeDuration);
 
@@ -148,5 +165,4 @@ public class SurgeManager : MonoBehaviour
         // Hook: haptic nudge on mobile
         // Haptics_Manager.Instance.LightTap();
     }
-
 }

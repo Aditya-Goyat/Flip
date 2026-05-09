@@ -17,9 +17,9 @@ public class ScoreDisplay : MonoBehaviour
         int best = Mathf.FloorToInt(ScoreManager.Instance.GetBestScore());
 
         if (currentScoreText != null)
-            currentScoreText.text = "SCORE: " + current.ToString();
+            currentScoreText.text = current.ToString();
 
         if (bestScoreText != null)
-            bestScoreText.text = "BEST: " + best.ToString();
+            bestScoreText.text = best.ToString();
     }
 }

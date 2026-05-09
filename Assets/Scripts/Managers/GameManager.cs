@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = 90;
+
         ApplyColor(false);
 
         // Ensure the sprite starts hidden off-screen
