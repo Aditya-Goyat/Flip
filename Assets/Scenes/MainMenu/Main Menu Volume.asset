@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6793359622093078106
+--- !u!114 &-4332226782874561344
 MonoBehaviour:
   m_ObjectHideFlags: 3
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14,17 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.Bloom
   active: 1
   skipIterations:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 0.98
+    m_Value: 0.85
   intensity:
     m_OverrideState: 1
-    m_Value: 1.94
+    m_Value: 1
   scatter:
-    m_OverrideState: 1
-    m_Value: 0.21
+    m_OverrideState: 0
+    m_Value: 0.7
   clamp:
     m_OverrideState: 0
     m_Value: 65472
@@ -38,10 +38,10 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   downscale:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   maxIterations:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 6
   dirtTexture:
     m_OverrideState: 0
@@ -63,4 +63,4 @@ MonoBehaviour:
   m_Name: Main Menu Volume
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.VolumeProfile
   components:
-  - {fileID: -6793359622093078106}
+  - {fileID: -4332226782874561344}
