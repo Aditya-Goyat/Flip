@@ -5,14 +5,8 @@ public class SettingsMenu : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Slider volumeSlider;
-
-    [Header("Sound Toggle")]
-    [SerializeField] private Button soundButton;
-    [SerializeField] private SpriteToggle soundVisuals; // Drag the button here too
-
-    [Header("Haptics Toggle")]
-    [SerializeField] private Button hapticsButton;
-    [SerializeField] private SpriteToggle hapticsVisuals; // Drag the button here too
+    [SerializeField] private Toggle soundToggle;
+    [SerializeField] private Toggle hapticsToggle;
 
     void Start()
     {
@@ -25,8 +19,7 @@ public class SettingsMenu : MonoBehaviour
     private void InitializeVolume()
     {
         if (AudioManager.Instance == null) return;
-        float currentVol = AudioManager.Instance.GetSavedVolume();
-        volumeSlider.value = currentVol;
+        volumeSlider.value = AudioManager.Instance.GetSavedVolume();
         volumeSlider.onValueChanged.AddListener(OnVolumeSliderChanged);
     }
 
@@ -35,52 +28,34 @@ public class SettingsMenu : MonoBehaviour
         if (AudioManager.Instance != null) AudioManager.Instance.SetMasterVolume(value);
     }
 
-    // --- 2. SOUND BUTTON ---
+    // --- 2. SOUND TOGGLE ---
     private void InitializeSound()
     {
         if (AudioManager.Instance == null) return;
 
-        // Get State (Sound ON means NOT Muted)
+        // Sound ON = Not Muted
         bool isSoundOn = !AudioManager.Instance.IsMuted();
+        soundToggle.isOn = isSoundOn;
 
-        // Update visual sprite
-        soundVisuals.SetState(isSoundOn);
-
-        // Listen for clicks
-        soundButton.onClick.AddListener(OnSoundClicked);
+        soundToggle.onValueChanged.AddListener(OnSoundToggleChanged);
     }
 
-    private void OnSoundClicked()
+    private void OnSoundToggleChanged(bool isOn)
     {
-        // 1. Toggle Visuals
-        soundVisuals.Toggle();
-
-        // 2. Logic: If manager is Muted, we are turning sound ON.
-        bool isCurrentlyMuted = AudioManager.Instance.IsMuted();
-        AudioManager.Instance.SetMute(!isCurrentlyMuted); // Toggle mute state
+        AudioManager.Instance.SetMute(!isOn);
     }
 
-    // --- 3. HAPTICS BUTTON ---
+    // --- 3. HAPTICS TOGGLE ---
     private void InitializeHaptics()
     {
-        // Get State
         bool isHapticsOn = HapticsManager.IsHapticsEnabled();
+        hapticsToggle.isOn = isHapticsOn;
 
-        // Update visual sprite
-        hapticsVisuals.SetState(isHapticsOn);
-
-        // Listen for clicks
-        hapticsButton.onClick.AddListener(OnHapticsClicked);
+        hapticsToggle.onValueChanged.AddListener(OnHapticsToggleChanged);
     }
 
-    private void OnHapticsClicked()
+    private void OnHapticsToggleChanged(bool isOn)
     {
-        // 1. Toggle Visuals
-        hapticsVisuals.Toggle();
-
-        // 2. Logic: Get new state from the Visuals (or invert previous)
-        // Since we just toggled visuals, let's grab the stored pref or just invert.
-        bool newHapticState = !HapticsManager.IsHapticsEnabled();
-        HapticsManager.SetHaptics(newHapticState);
+        HapticsManager.SetHaptics(isOn);
     }
 }
