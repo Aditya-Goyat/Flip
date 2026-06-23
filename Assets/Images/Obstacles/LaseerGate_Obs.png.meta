@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: a8fe4b961537f8e4985410b11a242796
+guid: b08de242b44d6a14a94f552f67e65693
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 439740553945983607
-    second: SpeedUp Powerup_0
-  - first:
-      213: 2362019017821868779
-    second: SpeedUp Powerup_1
-  - first:
-      213: -7837544017015462729
-    second: SpeedUp Powerup_2
+      213: 4876481016587797041
+    second: LaseerGate_Obs_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,7 +48,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 1
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -119,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SpeedUp Powerup_0
+      name: LaseerGate_Obs_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 21
-        width: 109
-        height: 96
+        x: 2
+        y: 2
+        width: 651
+        height: 332
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,52 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 77aa84734b54a1600800000000000000
-      internalID: 439740553945983607
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpeedUp Powerup_1
-      rect:
-        serializedVersion: 2
-        x: 21
-        y: 12
-        width: 67
-        height: 58
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: be25dfd38c397c020800000000000000
-      internalID: 2362019017821868779
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SpeedUp Powerup_2
-      rect:
-        serializedVersion: 2
-        x: 42
-        y: 6
-        width: 25
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7b42e4add337b3390800000000000000
-      internalID: -7837544017015462729
+      spriteID: 132c6abd5adbca340800000000000000
+      internalID: 4876481016587797041
       vertices: []
       indices: 
       edges: []
@@ -198,9 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      SpeedUp Powerup_0: 439740553945983607
-      SpeedUp Powerup_1: 2362019017821868779
-      SpeedUp Powerup_2: -7837544017015462729
+      LaseerGate_Obs_0: 4876481016587797041
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
