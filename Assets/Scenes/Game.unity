@@ -2641,7 +2641,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &932979122
 Transform:
   m_ObjectHideFlags: 0
@@ -2671,14 +2671,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameplayIntroTransition
   gameplayShip: {fileID: 452959819}
   gridScrollScript: {fileID: 1178836527}
-  landingParticle: {fileID: 0}
-  boostVFX: {fileID: 3781276331369508249}
-  spaceBackground: {fileID: 564041049}
-  spawnScale: {x: 1.5, y: 1.5, z: 1.5}
-  targetScale: {x: 0.5, y: 0.5, z: 0.5}
-  spawnPosition: {x: 0, y: 12, z: 0}
+  spawnPosition: {x: 0, y: -8, z: 0}
   targetPosition: {x: 0, y: -2.8, z: 0}
-  waitBeforeDrop: 0.1
   dropDuration: 1
 --- !u!1 &961183264
 GameObject:

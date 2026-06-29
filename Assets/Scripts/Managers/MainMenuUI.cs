@@ -18,7 +18,10 @@ public class MainMenuUI : MonoBehaviour
     public GameObject menuUI;
     public Animator shipAnimator;
     public CanvasGroup spaceBackground;  // drag your space BG CanvasGroup here
-    public GameObject boostVFX;
+
+    [Header("VFX")]
+    public GameObject idleVFX;      // your current thruster VFX
+    public GameObject blastoffVFX;  // new VFX for the blastoff animation
 
     [Header("Camera Shake")]
     public Camera mainCamera;            // drag your Main Camera here
@@ -72,7 +75,7 @@ public class MainMenuUI : MonoBehaviour
 
         // 1. Hide menu UI, turn VFX on — stays on through entire sequence
         if (menuUI != null) menuUI.SetActive(false);
-        if (boostVFX != null) boostVFX.SetActive(true);
+        if (idleVFX != null) idleVFX.SetActive(true);
 
         // 2. Start pre-loading scene silently in background
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(gameplaySceneName);
@@ -94,8 +97,9 @@ public class MainMenuUI : MonoBehaviour
             StartCoroutine(CameraShake());
 
         // 5. Fire the Blastoff animation
-        if (shipAnimator != null)
-            shipAnimator.SetTrigger("Blastoff");
+        if (idleVFX != null) idleVFX.SetActive(false);     // idle off
+        if (blastoffVFX != null) blastoffVFX.SetActive(true); // blastoff on
+        if (shipAnimator != null) shipAnimator.SetTrigger("Blastoff");
 
         // 6. Wait for the full blastoff clip to finish
         yield return new WaitForSeconds(blastoffClipDuration);

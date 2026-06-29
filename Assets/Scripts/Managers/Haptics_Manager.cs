@@ -23,6 +23,7 @@ public class Haptics_Manager : MonoBehaviour
         }
 
         Instance = this;
+        transform.SetParent(null); // Detach from parent before DontDestroyOnLoad
         DontDestroyOnLoad(gameObject);
     }
 
