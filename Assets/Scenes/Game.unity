@@ -3490,8 +3490,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 930d202b1c9fc2048a200e83c9869a22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DifficultyManager
-  rampStartTime: 10
-  timeToMaxDifficulty: 120
+  rampStartTime: 2
+  timeToMaxDifficulty: 80
   difficultyCurve:
     serializedVersion: 2
     m_Curve:
@@ -3505,8 +3505,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.23275757
-      value: 0.10630615
+      time: 0.1503636
+      value: 0.049512938
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -3514,8 +3514,17 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.46551514
-      value: 0.3730255
+      time: 0.3550827
+      value: 0.30233747
+      inSlope: 0.022586264
+      outSlope: 0.022586264
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 1
+    - serializedVersion: 3
+      time: 0.5514882
+      value: 0.5210663
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -3523,14 +3532,23 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.75
-      value: 0.72
+      time: 0.6998401
+      value: 0.75245315
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.8527906
+      value: 0.8243905
+      inSlope: 0.0258987
+      outSlope: 0.0258987
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 1
+      outWeight: 0.95550317
     - serializedVersion: 3
       time: 1.074707
       value: 1.0657883
@@ -3544,7 +3562,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   baseObstacleSpeed: 4
-  maxObstacleSpeed: 16
+  maxObstacleSpeed: 12
   obstacleSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -3558,6 +3576,33 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
+      time: 0.30782187
+      value: 0.10449598
+      inSlope: 0.0151916025
+      outSlope: 0.0151916025
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.23990592
+    - serializedVersion: 3
+      time: 0.6062502
+      value: 0.5522103
+      inSlope: 0.004150565
+      outSlope: 0.004150565
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.29512364
+    - serializedVersion: 3
+      time: 0.85181075
+      value: 0.8796953
+      inSlope: 0.015007794
+      outSlope: 0.015007794
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.95872575
+    - serializedVersion: 3
       time: 1
       value: 1
       inSlope: 0
@@ -3570,7 +3615,7 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   baseSpawnInterval: 1.2
-  minSpawnInterval: 0.2
+  minSpawnInterval: 0.35
   spawnIntervalCurve:
     serializedVersion: 2
     m_Curve:
@@ -3583,6 +3628,33 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.203877
+      value: 0.40800676
+      inSlope: 0.020303167
+      outSlope: 0.020303167
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.2463476
+    - serializedVersion: 3
+      time: 0.45256832
+      value: 0.55081284
+      inSlope: 0.03901546
+      outSlope: 0.03901546
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.36065075
+    - serializedVersion: 3
+      time: 0.7043342
+      value: 0.80826765
+      inSlope: 0.01678671
+      outSlope: 0.01678671
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.6730546
     - serializedVersion: 3
       time: 1
       value: 1
@@ -3610,14 +3682,23 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.4
-      value: 0.35
+      time: 0.20666665
+      value: 0.4508563
       inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.5008743
+      value: 0.6586264
+      inSlope: 0.0057746368
+      outSlope: 0.0057746368
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.5183155
     - serializedVersion: 3
       time: 0.75
       value: 0.75
@@ -3640,8 +3721,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   enablePulse: 1
-  pulseStrength: 0.08
-  pulseFrequency: 0.2
+  pulseStrength: 0.12
+  pulseFrequency: 0.08
 --- !u!4 &1218491838
 Transform:
   m_ObjectHideFlags: 0
@@ -5292,11 +5373,11 @@ MonoBehaviour:
     spawnWeight: 10
   - name: Chaser
     prefab: {fileID: 4427785261831207834, guid: 1e7b1091f6ee09d42b3873d322bba218, type: 3}
-    unlockTime: 2
-    spawnWeight: 1
+    unlockTime: 10
+    spawnWeight: 2
   laserGatePrefab: {fileID: 6496127810526115653, guid: 3f672e437611c5d46a2026d664b81597, type: 3}
   gauntletDuration: 8
-  timeBetweenGauntlets: 25
+  timeBetweenGauntlets: 30
   spawnY: 6
   laneXPositions:
   - -2
@@ -5308,10 +5389,10 @@ MonoBehaviour:
   doubleSpawnStartDifficulty: 0.25
   burstSpawnStartDifficulty: 0.55
   maxDoubleSpawnChance: 0.3
-  maxBurstChance: 0.15
+  maxBurstChance: 0.2
   minBurstCount: 2
   maxBurstCount: 3
-  burstGap: 0.4
+  burstGap: 0.12
   maxSameLaneStreak: 2
 --- !u!4 &1990427088
 Transform:
@@ -5372,7 +5453,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc54a357e5b61f34ebf77c80cc050c7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SurgeManager
-  timeToFill: 2
+  timeToFill: 25
   surgeDuration: 8
   surgeSlider: {fileID: 2021534358}
   readyGlowImage: {fileID: 0}
