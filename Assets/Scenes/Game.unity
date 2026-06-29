@@ -1772,7 +1772,7 @@ Camera:
   m_GameObject: {fileID: 519420028}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 4
+  m_ClearFlags: 2
   m_BackGroundColor: {r: 0.019607844, g: 0.019607844, b: 0.019607844, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -1841,6 +1841,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 764631b2c09b7d34186de0f1c103e253, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Camerashake
+  normalSize: 5
+  boostSize: 6
+  transitionSpeed: 5
 --- !u!1 &564041046
 GameObject:
   m_ObjectHideFlags: 0
@@ -3321,8 +3324,8 @@ Transform:
   m_GameObject: {fileID: 1177208316}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.8082578, y: 3.47328, z: 0}
-  m_LocalScale: {x: 0.67606, y: 0.6862236, z: 1}
+  m_LocalPosition: {x: 2.42, y: 2.2202, z: 0}
+  m_LocalScale: {x: 0.8046466, y: 0.8167433, z: 1.1902}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1073062562}
@@ -3435,8 +3438,8 @@ Transform:
   m_GameObject: {fileID: 1178836521}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.82619, y: 3.39438, z: 0}
-  m_LocalScale: {x: 7.349256, y: 12.892127, z: 1}
+  m_LocalPosition: {x: 2.4413002, y: 2.1263, z: 0}
+  m_LocalScale: {x: 8.747085, y: 15.34421, z: 1.1902}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1073062562}
@@ -5369,8 +5372,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc54a357e5b61f34ebf77c80cc050c7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SurgeManager
-  timeToFill: 15
-  surgeDuration: 9
+  timeToFill: 2
+  surgeDuration: 8
   surgeSlider: {fileID: 2021534358}
   readyGlowImage: {fileID: 0}
   surgeActivateSound: {fileID: 8300000, guid: 9711a902ae0270e41b496288f8e40d64, type: 3}

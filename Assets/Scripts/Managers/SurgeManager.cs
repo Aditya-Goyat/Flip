@@ -30,6 +30,7 @@ public class SurgeManager : MonoBehaviour
     [Tooltip("Assign an AudioSource, or let the script find one automatically.")]
     public AudioSource audioSource;
 
+
     // ── Runtime State ─────────────────────────────────────────────────────────
     private float currentFill = 0f;
 
@@ -99,10 +100,16 @@ public class SurgeManager : MonoBehaviour
 
         if (readyGlowImage != null)
             readyGlowImage.enabled = false;
+
+        // Safety check: Reset camera back to baseline view if game resets mid-surge
+        if (Camerashake.Instance != null)
+        {
+            Camerashake.Instance.ResetZoom();
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  Surge Coroutine (Modified for Smooth Draining)
+    //  Surge Coroutine (Modified for Smooth Draining & Camera Juice Hooks)
     // ─────────────────────────────────────────────────────────────────────────
     private IEnumerator ActivateSurge()
     {
@@ -112,10 +119,16 @@ public class SurgeManager : MonoBehaviour
         if (readyGlowImage != null)
             readyGlowImage.enabled = false;
 
-        // --- PLAY AUDIO HERE ---
+        // --- PLAY AUDIO ---
         if (surgeActivateSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(surgeActivateSound);
+        }
+
+        // --- CAMERA JUICE ACTIVE HOOK ---
+        if (Camerashake.Instance != null)
+        {
+            Camerashake.Instance.TriggerBoostZoom();
         }
 
         // Hook: spawn surge VFX on player 
@@ -143,6 +156,12 @@ public class SurgeManager : MonoBehaviour
         RefreshUI();
 
         IsSurging = false;
+
+        // --- CAMERA JUICE RESET HOOK ---
+        if (Camerashake.Instance != null)
+        {
+            Camerashake.Instance.ResetZoom();
+        }
 
         // Hook: play surge-ended sound 
         // AudioManager.Instance.PlaySFX(surgeEndSound);
