@@ -50,14 +50,20 @@ public class DeathUI : MonoBehaviour
 
     public void ContinueWithAd()
     {
+        // 1. Double check they are legally allowed to revive
         if (!GameManager.Instance.CanRevive())
             return;
 
+        // 2. THE FIX: Instantly hide the button the millisecond they click it!
+        if (continueButton != null)
+        {
+            continueButton.SetActive(false);
+        }
+
+        // 3. Show the ad and revive them
         AdsManager.Instance.ShowRewarded(() =>
         {
             GameManager.Instance.RevivePlayer();
-            // FIX: Removed ScoreManager.Instance.StartScore() from here!
-            // GameManager.RevivePlayer() now automatically calls ResumeScore() behind the scenes.
         });
     }
 }

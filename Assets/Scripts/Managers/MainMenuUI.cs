@@ -37,10 +37,18 @@ public class MainMenuUI : MonoBehaviour
     [Header("Audio")]
     public AudioClip uiClickSound;
 
+    [Header("Safety")]
+    [Tooltip("How long in seconds the play button is disabled when the menu first opens.")]
+    public float tapCooldown = 0.5f;
+    private float safeTime;
+
     private bool isStarting = false;
 
     void Start()
     {
+        // Set the lock timer so they can't instantly tap by accident
+        safeTime = Time.time + tapCooldown;
+
         // Space background starts invisible
         if (spaceBackground != null) spaceBackground.alpha = 0f;
 
@@ -58,7 +66,11 @@ public class MainMenuUI : MonoBehaviour
 
     public void Play()
     {
+        // Ignore the tap if the safety cooldown hasn't finished yet
+        if (Time.time < safeTime) return;
+
         if (isStarting) return;
+
         PlayClickSound();
         if (playButton) StartCoroutine(AnimateButton(playButton.transform));
         StartCoroutine(LaunchSequence());

@@ -4,45 +4,45 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-
     [Header("Movement")]
     [SerializeField] private float fallbackMoveSpeed = 8f;
 
     [Header("References")]
     [SerializeField] private DifficultyManager difficultyManager;
+    [Tooltip("Drag the child GameObject containing the Ship's SpriteRenderer here.")]
+    [SerializeField] private SpriteRenderer shipSpriteRenderer; 
 
     [Header("Edge Padding")]
-    [Tooltip("Small padding so the player sprite doesn't go half off screen.")]
     [SerializeField] private float edgePadding = 0.2f;
 
     [Header("Double-Tap Settings")]
-    [Tooltip("Maximum seconds between two taps to count as a double-tap.")]
     [SerializeField] private float doubleTapWindow = 0.3f;
-
-    [Tooltip("Maximum seconds a press can last and still be considered a 'tap' " +
-             "(prevents a slow hold from accidentally triggering the surge).")]
     [SerializeField] private float maxTapDuration = 0.18f;
 
     [Header("Surge Visuals")]
-    [SerializeField] private GameObject rushingVfxObject; // Drag your rushing VFX here
-    [SerializeField] private GameObject shipVfxObject;    // <--- NEW: Drag your Ship FX here!
+    [SerializeField] private GameObject rushingVfxObject; 
+    [SerializeField] private GameObject shipVfxObject;    
     [SerializeField] private float normalYPosition = -3.5f;
     [SerializeField] private float surgeYPosition = -1.5f;
     [SerializeField] private float surgeLerpSpeed = 5f;
 
+    [Header("Ghost Mode Settings")]
+    public float invulnerabilityDuration = 2.5f;
+    public float blinkSpeed = 0.15f;
 
     private float direction;
     private float currentVelocity;
     private bool isDead;
+    
+    // --- THE NEW FORCEFIELD ---
+    private bool isGhostMode = false; 
 
     private float leftLimit;
     private float rightLimit;
 
-    // --- Double-tap tracking (completely separate from movement) ---
-    private float lastTapTime = -999f;   // time of the most recent valid tap
-    private float pressStartTime = -999f;   // when the current press began
-    private bool pressActive = false;   // is a press currently held?
-
+    private float lastTapTime = -999f;   
+    private float pressStartTime = -999f;   
+    private bool pressActive = false;   
 
     public static PlayerController Instance;
 
@@ -69,51 +69,28 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
-        // --- NEW: Check if we are currently surging ---
         bool isSurging = SurgeManager.Instance != null && SurgeManager.Instance.IsSurging;
 
-        // Toggle the rushing VFX and the new Ship FX
-        if (rushingVfxObject != null)
-        {
-            rushingVfxObject.SetActive(isSurging);
-        }
-
-        if (shipVfxObject != null)
-        {
-            shipVfxObject.SetActive(isSurging);
-        }
+        if (rushingVfxObject != null) rushingVfxObject.SetActive(isSurging);
+        if (shipVfxObject != null) shipVfxObject.SetActive(isSurging);
 
         direction = 0f;
 
-        // ── Touch ────────────────────────────────────────────────────────────
-        if (Touchscreen.current != null &&
-            Touchscreen.current.primaryTouch.press.isPressed)
+        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
         {
             float x = Touchscreen.current.primaryTouch.position.ReadValue().x;
             direction = x < Screen.width * 0.5f ? -1f : 1f;
         }
-        // ── Mouse (editor / desktop fallback) ────────────────────────────────
-        else if (Mouse.current != null &&
-                 Mouse.current.leftButton.isPressed)
+        else if (Mouse.current != null && Mouse.current.leftButton.isPressed)
         {
             float x = Mouse.current.position.ReadValue().x;
             direction = x < Screen.width * 0.5f ? -1f : 1f;
         }
 
-        // Respect screen-flip modifier if present
-        if (FlipManager.IsInverted)
-            direction *= -1f;
+        if (FlipManager.IsInverted) direction *= -1f;
 
-        // Resolve move speed from difficulty, then apply powerup multiplier
-        float speed = difficultyManager != null
-            ? difficultyManager.CurrentPlayerMoveSpeed
-            : fallbackMoveSpeed;
+        float speed = difficultyManager != null ? difficultyManager.CurrentPlayerMoveSpeed : fallbackMoveSpeed;
 
-        // ── Powerup speed modifier – commented out for Pure Skill mode ────────
-        // if (PowerupManager.Instance != null)
-        //     speed *= PowerupManager.Instance.PlayerSpeedMultiplier;
-
-        // Smooth acceleration / deceleration
         float targetVelocity = direction * speed;
         currentVelocity = Mathf.Lerp(currentVelocity, targetVelocity, 12f * Time.deltaTime);
 
@@ -121,7 +98,6 @@ public class PlayerController : MonoBehaviour
         pos.x += currentVelocity * Time.deltaTime;
         pos.x = Mathf.Clamp(pos.x, leftLimit, rightLimit);
 
-        // --- NEW: Y-Axis Forward/Backward Slide ---
         float targetY = isSurging ? surgeYPosition : normalYPosition;
         pos.y = Mathf.Lerp(pos.y, targetY, surgeLerpSpeed * Time.deltaTime);
 
@@ -136,68 +112,48 @@ public class PlayerController : MonoBehaviour
         if (pressedThisFrame && !pressActive)
         {
             pressActive = true;
-            pressStartTime = Time.unscaledTime;   // unscaled so pause doesn't break it
+            pressStartTime = Time.unscaledTime;   
         }
 
         if (releasedThisFrame && pressActive)
         {
             pressActive = false;
-
             float pressDuration = Time.unscaledTime - pressStartTime;
 
             if (pressDuration <= maxTapDuration)
             {
-                // Valid tap – check for double-tap
                 float timeSinceLast = Time.unscaledTime - lastTapTime;
 
                 if (timeSinceLast <= doubleTapWindow)
                 {
-                    // ✅ Double-tap confirmed
                     SurgeManager.Instance?.TryActivateSurge();
-                    lastTapTime = -999f; // Reset so a third tap doesn't re-fire
+                    lastTapTime = -999f; 
                 }
                 else
                 {
-                    // First tap of a potential pair – record the time
                     lastTapTime = Time.unscaledTime;
                 }
             }
             else
             {
-                // Long hold → not a tap, clear first-tap memory
                 lastTapTime = -999f;
             }
         }
     }
 
-    // ── Input helpers (returns true only on the frame the state changed) ─────
-
     private bool WasPressedThisFrame()
     {
-        if (Touchscreen.current != null &&
-            Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
-            return true;
-
-        if (Mouse.current != null &&
-            Mouse.current.leftButton.wasPressedThisFrame)
-            return true;
-
+        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame) return true;
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) return true;
         return false;
     }
 
     private bool WasReleasedThisFrame()
     {
-        if (Touchscreen.current != null &&
-            Touchscreen.current.primaryTouch.press.wasReleasedThisFrame)
-            return true;
-
-        if (Mouse.current != null &&
-            Mouse.current.leftButton.wasReleasedThisFrame)
-            return true;
-
+        if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasReleasedThisFrame) return true;
+        if (Mouse.current != null && Mouse.current.leftButton.wasReleasedThisFrame) return true;
         return false;
     }
-
 
     private void CalculateScreenBounds()
     {
@@ -208,52 +164,28 @@ public class PlayerController : MonoBehaviour
         rightLimit = right.x - edgePadding;
     }
 
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isDead) return;
+        // --- 1. BULLETPROOF FIX: If we are a ghost, instantly ignore the collision! ---
+        if (isDead || isGhostMode) return; 
 
         if (!collision.gameObject.CompareTag("Obstacle")) return;
 
         if (SurgeManager.Instance != null && SurgeManager.Instance.IsSurging)
         {
-            // ── Bulldozer Mode
-            // Obstacle is destroyed; player keeps moving unharmed.
             Destroy(collision.gameObject);
-
-            // Trigger the explosion we just added to the VFXManager!
-            if (VFXManager.Instance != null)
-            {
-                VFXManager.Instance.PlayExplosion(collision.transform.position);
-            }
+            if (VFXManager.Instance != null) VFXManager.Instance.PlayExplosion(collision.transform.position);
         }
         else
         {
-            // ── Normal Mode
             isDead = true;
             Die();
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        // ── Powerup collection – commented out for Pure Skill mode ────────────
-        // if (other.CompareTag("Powerup"))
-        // {
-        //     Powerup powerup = other.GetComponent<Powerup>();
-        //     if (powerup != null && PowerupManager.Instance != null)
-        //     {
-        //         PowerupManager.Instance.CollectPowerup(powerup.GetPowerupType());
-        //         Destroy(other.gameObject);
-        //     }
-        // }
-    }
-
     private void Die()
     {
-        if (Haptics_Manager.Instance != null)
-            Haptics_Manager.Instance.DeathTap();
-
+        if (Haptics_Manager.Instance != null) Haptics_Manager.Instance.DeathTap();
         GameManager.Instance.OnPlayerDeath();
     }
 
@@ -261,26 +193,41 @@ public class PlayerController : MonoBehaviour
     {
         isDead = false;
         currentVelocity = 0f;
-        pressActive = false;        // clear any dangling press state
+        pressActive = false;        
         lastTapTime = -999f;
         transform.position = new Vector3(0f, -3.5f, 0f);
+
         StartCoroutine(Invulnerability());
     }
 
+    // --- 2. THE UPDATED COROUTINE ---
     private System.Collections.IEnumerator Invulnerability()
     {
-        Physics2D.IgnoreLayerCollision(
-            LayerMask.NameToLayer("Player"),
-            LayerMask.NameToLayer("Obstacle"),
-            true
-        );
+        // Turn ON the Code-Level Forcefield
+        isGhostMode = true;
 
-        yield return new WaitForSeconds(1f);
+        float elapsedTime = 0f;
 
-        Physics2D.IgnoreLayerCollision(
-            LayerMask.NameToLayer("Player"),
-            LayerMask.NameToLayer("Obstacle"),
-            false
-        );
+        if (shipSpriteRenderer != null)
+        {
+            while (elapsedTime < invulnerabilityDuration)
+            {
+                // Hard-toggle the visual so the HDR shader doesn't block the fade
+                shipSpriteRenderer.enabled = !shipSpriteRenderer.enabled;
+                yield return new WaitForSeconds(blinkSpeed);
+                elapsedTime += blinkSpeed;
+            }
+
+            // Force it back on
+            shipSpriteRenderer.enabled = true;
+        }
+        else
+        {
+            // If the SpriteRenderer wasn't assigned in the inspector, just wait safely
+            yield return new WaitForSeconds(invulnerabilityDuration);
+        }
+
+        // Turn OFF the Forcefield - player is mortal again
+        isGhostMode = false;
     }
 }
