@@ -57,6 +57,9 @@ public class ScoreManager : MonoBehaviour
     {
         isRunning = false;
         SaveBestScore();
+
+        // Send the score to Google Play when they die!
+        if (GPGSManager.Instance != null) GPGSManager.Instance.SubmitScore(score);
     }
 
     public void ResumeScore()

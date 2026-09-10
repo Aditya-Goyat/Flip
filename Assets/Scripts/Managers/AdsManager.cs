@@ -33,7 +33,7 @@ public class AdsManager : MonoBehaviour,
         // Safety check to ensure it doesn't double-initialize.
         if (!Advertisement.isInitialized && Advertisement.isSupported)
         {
-            Advertisement.Initialize(gameId, true, this); // testMode = true
+            Advertisement.Initialize(gameId, false, this);
         }
     }
 
